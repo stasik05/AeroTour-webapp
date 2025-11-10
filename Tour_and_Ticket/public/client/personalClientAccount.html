@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>AeroTour - Личный кабинет</title>
+    <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:wght@700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link rel="stylesheet" href="/shared/css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                        <h1 class="logo-text">AeroTour</h1>
+                    </div>
+                    <nav class="navigation">
+                        <a class="nav-link" href="mainClientWindow.html">
+                            <span class="material-symbols-outlined">home</span>
+                            <span class="nav-link-text">Главное меню</span>
+                        </a>
+                        <a class="nav-link" href="clientFavorites.html">
+                            <span class="material-symbols-outlined">favorite</span>
+                            <span class="nav-link-text">Избранное</span>
+                        </a>
+                        <a class="nav-link" href="technicalClientSupport.html">
+                            <span class="material-symbols-outlined">support_agent</span>
+                            <span class="nav-link-text">Поддержка</span>
+                        </a>
+                        <a class="nav-link" href="clientCalendar.html">
+                            <span class="material-symbols-outlined">calendar_month</span>
+                            <span class="nav-link-text">Календарь</span>
+                        </a>
+                        <a class="nav-link active">
+                            <span class="material-symbols-outlined">person</span>
+                            <span class="nav-link-text">Личный кабинет</span>
+                        </a>
+                    </nav>
+                    <div class="header-actions">
+                        <button class="icon-button">
+                            <span class="material-symbols-outlined">notifications</span>
+                        </button>
+                        <img alt="User avatar" class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="main-content">
+            <div class="background-overlay">
+                <div class="background-image"></div>
+                <div class="background-darken"></div>
+            </div>
+            <div class="content-wrapper">
+                <div class="container">
+                    <div class="content-grid">
+                        <div class="sidebar">
+                            <div class="profile-card card">
+                                <div class="profile-header">
+                                    <img alt="User avatar large" class="profile-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+                                    <h2 class="profile-name">Иванов Иван</h2>
+                                    <p class="profile-email">ivan.ivanov@example.com</p>
+                                </div>
+                                <form class="profile-form">
+                                    <div class="form-group">
+                                        <label class="form-label" for="first-name">Имя</label>
+                                        <input class="form-input" id="first-name" type="text" value="Иван"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="last-name">Фамилия</label>
+                                        <input class="form-input" id="last-name" type="text" value="Иванов"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="email">Электронная почта</label>
+                                        <input class="form-input" id="email" type="email" value="ivan.ivanov@example.com"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="phone">Телефон</label>
+                                        <input class="form-input" id="phone" type="tel" value="+7 (999) 123-45-67"/>
+                                    </div>
+                                    <button class="submit-button primary" type="submit">
+                                        <span class="material-symbols-outlined">save</span>
+                                        Сохранить изменения
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="password-card card">
+                                <h3 class="card-title">Смена пароля</h3>
+                                <form class="password-form">
+                                    <div class="form-group">
+                                        <label class="form-label" for="current-password">Текущий пароль</label>
+                                        <input class="form-input" id="current-password" type="password"/>
+                                        <span class="password-toggle" data-target="current-password"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="new-password">Новый пароль</label>
+                                        <input class="form-input" id="new-password" type="password"/>
+                                    </div>
+                                    <button class="submit-button accent" type="submit">
+                                        <span class="material-symbols-outlined">lock_reset</span>
+                                        Сменить пароль
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="main-content-area">
+                            <div class="bookings-card card">
+                                <h2 class="card-title large">История бронирований</h2>
+                                <div class="bookings-list">
+                                    <div class="booking-item">
+                                        <div class="booking-content">
+                                            <img alt="Italy" class="booking-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI_kzN8TnwlyRww2iVrlGXJEwHi43hz9pvrjIee3MLz-2sI35Q6WYRvGqLRR4SHfHaSMEw-7QY6rttqbBw_FLlmBT3hKI6EVxI18SlNCQc5vsp3O6e3rSWr1knhuRa2coeiKmdd_erjCHfgApB_LZL4ic7L8fflCl2hKm59D_j9wqBdrkDjTVn4apahJR6DjpY_Q8XsLt-q8C583mXQMk2_DPjMBhGUeAAlaKznf9cQ_L6vutogN0D0KgZ2bKays0jCH_J0IlH8gU"/>
+                                            <div class="booking-details">
+                                                <h4 class="booking-title">Тур в Италию: Озера Комо и Гарда</h4>
+                                                <p class="booking-date">20.08.2023 - 30.08.2023</p>
+                                                <p class="booking-status confirmed">Статус: Подтверждено</p>
+                                            </div>
+                                        </div>
+                                        <div class="booking-actions">
+                                            <p class="booking-price">150 000 ₽</p>
+                                            <a class="booking-link" href="#">Подробнее</a>
+                                        </div>
+                                    </div>
+                                    <div class="booking-item">
+                                        <div class="booking-content">
+                                            <img alt="Japan" class="booking-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZAKGX2B_DPFhNHjHJjGsjT-i5X6-qnKcdUF5n1im5fk7A8WXBsXHBApYE3kOMZYYcPYJ2ztB2Ue1yECbX2iymx5zno1bC71-zO8YasgltfmLAuR9oM1adJ7dqTkjENSj8JnkXpS3e3kZTWUZgJ54wEok7efdGBoBT2JhUvn6TS9DdXFLhwDehY7f3j7a8AUknkxCEttMta29usnpWgjz5CM3kNXmdgTlyzX4liRAjJefXT9D3Q0AtiSJSJ9Ip2EYzbZNN03ibfBU"/>
+                                            <div class="booking-details">
+                                                <h4 class="booking-title">Авиабилеты: Москва - Токио</h4>
+                                                <p class="booking-date">15.09.2023</p>
+                                                <p class="booking-status pending">Статус: Ожидает оплаты</p>
+                                            </div>
+                                        </div>
+                                        <div class="booking-actions">
+                                            <p class="booking-price">85 000 ₽</p>
+                                            <a class="booking-link" href="#">Оплатить</a>
+                                        </div>
+                                    </div>
+                                    <div class="booking-item">
+                                        <div class="booking-content">
+                                            <img alt="Mountains" class="booking-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyUydp8-ZqUDnuGZ9UYiOHy6WMXBCu1U7Du9cFEfYU4NtCiyS27yzj3GX8bQ-Bch3v3tfu2YL4Ey9V_n8V45iiz_invt-0Pk5N23D9-gZkAUf64LLgDNZ4Xh7Y9I0A9y-82SdJR1JuIS-EPhNXdz8Fj5njik4KjsAF9JN2laJyvJtw0FkWCGtsYKgRBpn3h9Isb0biW6g4KdJJ0gPw5csEddHsJs9wKGOq5779Xgzf1kMRxzNxDH2SL4Ejy0Pb9BDxGxOTTwm8k20"/>
+                                            <div class="booking-details">
+                                                <h4 class="booking-title">Тур в горы: Поход по Альпам</h4>
+                                                <p class="booking-date">01.07.2023 - 10.07.2023</p>
+                                                <p class="booking-status completed">Статус: Завершено</p>
+                                            </div>
+                                        </div>
+                                        <div class="booking-actions">
+                                            <p class="booking-price">120 000 ₽</p>
+                                            <a class="booking-link" href="#">Подробнее</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    <script type="module" src="js/ClientPersonalAccount.js"></script>
+</body>
+</html>

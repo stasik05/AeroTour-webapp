@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>AeroTour - Регистрация</title>
+    <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:wght@700;800&amp;display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/shared/css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <header class="header1">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                        <h1 class="logo-text">
+                            <a href="/" style="text-decoration: none; color: inherit;">AeroTour</a>
+                        </h1>
+                    </div>
+                    <nav class="navigation">
+                        <a class="nav-link1">Авиабилеты</a>
+                        <a class="nav-link1">Туры</a>
+                        <a class="nav-link1">Отели</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <main class="main-content1">
+            <div class="registration-container">
+                <div class="registration-header">
+                    <h2 class="registration-title">Создайте аккаунт</h2>
+                    <p class="registration-subtitle">Присоединяйтесь к нам, чтобы открыть мир путешествий.</p>
+                </div>
+                <div class="registration-form-container">
+                    <form class="registration-form">
+                        <div class="name-fields">
+                            <div class="input-group">
+                                <label class="sr-only" for="first-name">Имя</label>
+                                <input autocomplete="given-name" class="form-input1" id="first-name" name="first-name" placeholder="Имя" required="" type="text"/>
+                            </div>
+                            <div class="input-group">
+                                <label class="sr-only" for="last-name">Фамилия</label>
+                                <input autocomplete="family-name" class="form-input1" id="last-name" name="last-name" placeholder="Фамилия" required="" type="text"/>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="sr-only" for="email">Электронная почта</label>
+                            <input autocomplete="email" class="form-input1" id="email" name="email" placeholder="Электронная почта" required="" type="email"/>
+                        </div>
+                        <div class="input-group">
+                            <label class="sr-only" for="password">Пароль</label>
+                            <input autocomplete="new-password" class="form-input1" id="password" name="password" placeholder="Пароль" required="" type="password"/>
+                        </div>
+                        <div class="input-group">
+                            <label class="sr-only" for="confirm-password">Подтвердите пароль</label>
+                            <input autocomplete="new-password" class="form-input1" id="confirm-password" name="confirm-password" placeholder="Подтвердите пароль" required="" type="password"/>
+                        </div>
+                        <div class="submit-button-container">
+                            <button class="submit-button" type="submit">Зарегистрироваться</button>
+                        </div>
+                    </form>
+                    <div class="login-link-container">
+                        <p class="login-text">Уже есть аккаунт? <a class="login-link" href="/quest/Login.html">Войти</a></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+<script type="module" src="/quest/js/Registration.js"></script>
+</body>
+</html>

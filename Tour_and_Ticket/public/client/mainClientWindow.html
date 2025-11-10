@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>AeroTour - Окно клиента</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link rel="stylesheet" href="/shared/css/styles.css">
+</head>
+<body>
+<div class="page-wrapper">
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                    <h1 class="logo-text">AeroTour</h1>
+                </div>
+                <nav class="navigation">
+                    <a class="nav-link active">
+                        <span class="material-symbols-outlined">home</span>
+                        <span class="nav-link-text">Главное меню</span>
+                    </a>
+                    <a class="nav-link" href="/client/favorites">
+                        <span class="material-symbols-outlined">favorite</span>
+                        <span class="nav-link-text">Избранное</span>
+                    </a>
+                    <a class="nav-link" href="/client/support">
+                        <span class="material-symbols-outlined">support_agent</span>
+                        <span class="nav-link-text">Поддержка</span>
+                    </a>
+                    <a class="nav-link" href="/client/calendar">
+                        <span class="material-symbols-outlined">calendar_month</span>
+                        <span class="nav-link-text">Календарь</span>
+                    </a>
+                    <a class="nav-link" href="/client/profile">
+                        <span class="material-symbols-outlined">person</span>
+                        <span class="nav-link-text">Личный кабинет</span>
+                    </a>
+                </nav>
+                <div class="user-actions">
+                    <button class="notification-button">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+                    <button class="icon-button" id="logoutBtn">
+                        <span class="material-symbols-outlined">logout</span>
+                    </button>
+                    <img alt="User avatar" class="user-avatar" id="userAvatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="background-animation">
+            <div class="background-overlay"></div>
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+        <div class="content-overlay">
+            <div class="container">
+                <div class="search-section">
+                    <div class="search-header">
+                        <h2 class="search-title">Найдите свое идеальное путешествие</h2>
+                        <p class="search-subtitle">Туры и авиабилеты по всему миру</p>
+                    </div>
+                    <div class="search-form-container">
+                        <form class="search-form" id="searchForm">
+                            <div class="form-group">
+                                <label class="form-label" for="searchType">Тип поиска</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon1">category</span>
+                                    <select class="form-input" id="searchType" name="searchType" required>
+                                        <option value="">Выберите тип</option>
+                                        <option value="tour">Тур</option>
+                                        <option value="flight">Авиабилет</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="dynamic-form" id="tourForm" style="display: none;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="destination">Страна или город</label>
+                                        <div class="input-wrapper">
+                                            <span class="input-icon1">location_on</span>
+                                            <input class="form-input" id="destination" name="destination" placeholder="Куда поедете?" type="text"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" id="dateRange">Даты тура</label>
+                                        <div class="input-wrapper date-range-input">
+                                            <input class="form-input" id="dateRangeStart" name="startDate" placeholder="Начало" type="date"/>
+                                            <span class="date-range-separator">—</span>
+                                            <input class="form-input" id="dateRangeEnd" name="endDate" placeholder="Конец" type="date"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="tourPrice">Бюджет</label>
+                                        <div class="input-wrapper">
+                                            <span class="material-symbols-outlined input-icon1">attach_money</span>
+                                            <input class="form-input" id="tourPrice" name="maxPrice" placeholder="Макс. цена" type="text" inputmode="numeric" pattern="[0-9]*"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dynamic-form" id="flightForm" style="display: none;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="departureCity">Откуда</label>
+                                        <div class="input-wrapper">
+                                            <span class="input-icon1">flight_takeoff</span>
+                                            <input class="form-input" id="departureCity" name="departureCity" placeholder="Город вылета" type="text"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="arrivalCity">Куда</label>
+                                        <div class="input-wrapper">
+                                            <span class="input-icon1">flight_land</span>
+                                            <input class="form-input" id="arrivalCity" name="arrivalCity" placeholder="Город прилета" type="text"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="flightDate">Дата вылета</label>
+                                        <div class="input-wrapper">
+                                            <input class="form-input" id="flightDate" name="date" type="date"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="flightPrice">Бюджет</label>
+                                        <div class="input-wrapper">
+                                            <span class="input-icon1">attach_money</span>
+                                            <input class="form-input" id="flightPrice" name="maxPrice" placeholder="Макс. цена" type="text" inputmode="numeric" pattern="[0-9]*"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group search-button-group">
+                                <button class="search-button" type="submit" id="searchButton" disabled>
+                                    <span class="material-symbols-outlined">search</span>
+                                    Найти
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="results-section" id="resultsSection" style="display: none;">
+                    <h3 class="results-title" id="resultsTitle">Результаты поиска</h3>
+                    <div class="search-count" id="searchCount"></div>
+                    <div class="destinations-grid" id="resultsGrid">
+                    </div>
+                </div>
+
+                <div class="destinations-grid" id="defaultDestinations">
+                    <div class="destination-card">
+                        <img alt="Beautiful lake" class="destination-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI_kzN8TnwlyRww2iVrlGXJEwHi43hz9pvrjIee3MLz-2sI35Q6WYRvGqLRR4SHfHaSMEw-7QY6rttqbBw_FLlmBT3hKI6EVxI18SlNCQc5vsp3O6e3rSWr1knhuRa2coeiKmdd_erjCHfgApB_LZL4ic7L8fflCl2hKm59D_j9wqBdrkDjTVn4apahJR6DjpY_Q8XsLt-q8C583mXQMk2_DPjMBhGUeAAlaKznf9cQ_L6vutogN0D0KgZ2bKays0jCH_J0IlH8gU"/>
+                        <div class="destination-overlay"></div>
+                        <div class="destination-info">
+                            <h3 class="destination-title1">Озера Италии</h3>
+                            <p class="destination-description1">Откройте для себя красоту Комо и Гарда</p>
+                        </div>
+                    </div>
+                    <div class="destination-card">
+                        <img alt="Japanese temple" class="destination-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZAKGX2B_DPFhNHjHJjGsjT-i5X6-qnKcdUF5n1im5fk7A8WXBsXHBApYE3kOMZYYcPYJ2ztB2Ue1yECbX2iymx5zno1bC71-zO8YasgltfmLAuR9oM1adJ7dqTkjENSj8JnkXpS3e3kZTWUZgJ54wEok7efdGBoBT2JhUvn6TS9DdXFLhwDehY7f3j7a8AUknkxCEttMta29usnpWgjz5CM3kNXmdgTlyzX4liRAjJefXT9D3Q0AtiSJSJ9Ip2EYzbZNN03ibfBU"/>
+                        <div class="destination-overlay"></div>
+                        <div class="destination-info">
+                            <h3 class="destination-title1">Загадочная Япония</h3>
+                            <p class="destination-description1">От Токио до Киото: путешествие в будущее и прошлое</p>
+                        </div>
+                    </div>
+                    <div class="destination-card">
+                        <img alt="Adventurous hiker" class="destination-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyUydp8-ZqUDnuGZ9UYiOHy6WMXBCu1U7Du9cFEfYU4NtCiyS27yzj3GX8bQ-Bch3v3tfu2YL4Ey9V_n8V45iiz_invt-0Pk5N23D9-gZkAUf64LLgDNZ4Xh7Y9I0A9y-82SdJR1JuIS-EPhNXdz8Fj5njik4KjsAF9JN2laJyvJtw0FkWCGtsYKgRBpn3h9Isb0biW6g4KdJJ0gPw5csEddHsJs9wKGOq5779Xgzf1kMRxzNxDH2SL4Ejy0Pb9BDxGxOTTwm8k20"/>
+                        <div class="destination-overlay"></div>
+                        <div class="destination-info">
+                            <h3 class="destination-title1">Походы в горы</h3>
+                            <p class="destination-description1">Покоряйте вершины и наслаждайтесь видами</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script type="module" src="js/MainClientWindow.js"></script>
+</body>
+</html>

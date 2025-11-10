@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>AeroTour - Календарь</title>
+    <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:wght@700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link rel="stylesheet" href="/shared/css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                        <h1 class="logo-text">AeroTour</h1>
+                    </div>
+                    <nav class="navigation">
+                        <a class="nav-link" href="mainClientWindow.html">
+                            <span class="material-symbols-outlined">home</span>
+                            <span class="nav-link-text">Главное меню</span>
+                        </a>
+                        <a class="nav-link" href="clientFavorites.html">
+                            <span class="material-symbols-outlined">favorite</span>
+                            <span class="nav-link-text">Избранное</span>
+                        </a>
+                        <a class="nav-link" href="technicalClientSupport.html">
+                            <span class="material-symbols-outlined">support_agent</span>
+                            <span class="nav-link-text">Поддержка</span>
+                        </a>
+                        <a class="nav-link" href="personalClientAccount.html">
+                            <span class="material-symbols-outlined">person</span>
+                            <span class="nav-link-text">Личный кабинет</span>
+                        </a>
+                        <a class="nav-link active">
+                            <span class="material-symbols-outlined">calendar_month</span>
+                            <span class="nav-link-text">Календарь</span>
+                        </a>
+                    </nav>
+                    <div class="header-actions">
+                        <button class="icon-button">
+                            <span class="material-symbols-outlined">notifications</span>
+                        </button>
+                        <img alt="User avatar" class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="main-content">
+            <div class="background-overlay">
+                <img alt="Travel background image" class="background-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8yAC_7NH9M6-4CvRBlnwifkoYwi2PlwaBFey9aadYWIHoRZerw7nS9iIYqh9u0d7wAk7pWHqVzIhJLH3w-aBokfCILkVwhw6Ht147OePaH2Q35C_m_R0B_MVYLR4dg3zZVf6gfZeVeg6M02AwGQunIlk5hgNvMKaOTcsZOhlhoza6jHdV83OjcupQqGldL7aBlNMYNcjTcDQyJMD-xnJdmaYEZeFAE9wMKKjfhmV0IjCh_-hMFG2d-YUqtRkTMm-M6WNjA_J0IMY"/>
+                <div class="background-darken"></div>
+            </div>
+            <div class="content-wrapper">
+                <div class="container">
+                    <div class="calendar-grid">
+                        <div class="calendar-section">
+                            <div class="calendar-card card">
+                                <div class="calendar-header">
+                                    <h2 class="calendar-title">Календарь Поездок</h2>
+                                    <div class="calendar-navigation">
+                                        <button class="nav-button">
+                                            <span class="material-symbols-outlined">chevron_left</span>
+                                        </button>
+                                        <span class="current-month">Август 2024</span>
+                                        <button class="nav-button">
+                                            <span class="material-symbols-outlined">chevron_right</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="weekdays">
+                                    <div class="weekday">Пн</div>
+                                    <div class="weekday">Вт</div>
+                                    <div class="weekday">Ср</div>
+                                    <div class="weekday">Чт</div>
+                                    <div class="weekday">Пт</div>
+                                    <div class="weekday">Сб</div>
+                                    <div class="weekday">Вс</div>
+                                </div>
+                                <div class="calendar-days">
+                                    <div class="calendar-day inactive">29</div>
+                                    <div class="calendar-day inactive">30</div>
+                                    <div class="calendar-day inactive">31</div>
+                                    <div class="calendar-day">1</div>
+                                    <div class="calendar-day">2</div>
+                                    <div class="calendar-day">3</div>
+                                    <div class="calendar-day">4</div>
+                                    <div class="calendar-day">5</div>
+                                    <div class="calendar-day">6</div>
+                                    <div class="calendar-day has-trip primary">
+                                        <div class="day-number">7</div>
+                                        <div class="trip-indicator"></div>
+                                    </div>
+                                    <div class="calendar-day">8</div>
+                                    <div class="calendar-day">9</div>
+                                    <div class="calendar-day">10</div>
+                                    <div class="calendar-day">11</div>
+                                    <div class="calendar-day">12</div>
+                                    <div class="calendar-day">13</div>
+                                    <div class="calendar-day">14</div>
+                                    <div class="calendar-day">15</div>
+                                    <div class="calendar-day has-trip secondary">
+                                        <div class="day-number">16</div>
+                                        <div class="trip-indicator pink"></div>
+                                    </div>
+                                    <div class="calendar-day">17</div>
+                                    <div class="calendar-day">18</div>
+                                    <div class="calendar-day">19</div>
+                                    <div class="calendar-day">20</div>
+                                    <div class="calendar-day">21</div>
+                                    <div class="calendar-day">22</div>
+                                    <div class="calendar-day">23</div>
+                                    <div class="calendar-day">24</div>
+                                    <div class="calendar-day has-trip accent">
+                                        <div class="day-number">25</div>
+                                    </div>
+                                    <div class="calendar-day">26</div>
+                                    <div class="calendar-day">27</div>
+                                    <div class="calendar-day">28</div>
+                                    <div class="calendar-day">29</div>
+                                    <div class="calendar-day">30</div>
+                                    <div class="calendar-day">31</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="trip-info-section">
+                            <div class="trip-info-card card">
+                                <h3 class="trip-info-title">Информация о поездке</h3>
+                                <div class="trip-details">
+                                    <div class="trip-main-info">
+                                        <p class="trip-name">Тур в Стамбул</p>
+                                        <p class="trip-dates">7 августа 2024 - 14 августа 2024</p>
+                                    </div>
+                                    <div class="trip-additional-info">
+                                        <p class="trip-detail"><span class="detail-label">Статус:</span> <span class="status-completed">Завершено</span></p>
+                                        <p class="trip-detail"><span class="detail-label">Направление:</span> Турция, Стамбул</p>
+                                        <p class="trip-detail"><span class="detail-label">Авиакомпания:</span> Turkish Airlines</p>
+                                    </div>
+                                </div>
+                                <div class="no-trip-selected">
+                                    <p>Выберите дату, чтобы увидеть информацию о поездке.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script type="module" src="js/CalendarPage.js"></script>
+</body>
+</html>

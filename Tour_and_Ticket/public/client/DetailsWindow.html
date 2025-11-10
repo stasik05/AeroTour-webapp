@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>AeroTour - Детали Тура</title>
+  <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:wght@700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <link rel="stylesheet" href="/shared/css/styles.css">
+  <style>
+      :root {
+          --primary: #4f46e5;
+          --primary-50: #eef2ff;
+          --primary-100: #e0e7ff;
+          --primary-200: #c7d2fe;
+          --primary-300: #a5b4fc;
+          --primary-400: #818cf8;
+          --primary-500: #6366f1;
+          --primary-600: #4f46e5;
+          --primary-700: #4338ca;
+          --primary-800: #3730a3;
+          --primary-900: #312e81;
+          --primary-950: #1e1b4b;
+
+          --secondary: #10b981;
+          --secondary-50: #ecfdf5;
+          --secondary-100: #d1fae5;
+          --secondary-200: #a7f3d0;
+          --secondary-300: #6ee7b7;
+          --secondary-400: #34d399;
+          --secondary-500: #10b981;
+          --secondary-600: #059669;
+          --secondary-700: #047857;
+          --secondary-800: #065f46;
+          --secondary-900: #064e3b;
+          --secondary-950: #022c22;
+
+          --accent: #f59e0b;
+          --accent-50: #fffbeb;
+          --accent-100: #fef3c7;
+          --accent-200: #fde68a;
+          --accent-300: #fcd34d;
+          --accent-400: #fbbf24;
+          --accent-500: #f59e0b;
+          --accent-600: #d97706;
+          --accent-700: #b45309;
+          --accent-800: #92400e;
+          --accent-900: #78350f;
+          --accent-950: #451a03;
+
+          --background-light: #f1f5f9;
+          --background-dark: #0f172a;
+
+          --border-radius: 0.75rem;
+          --border-radius-lg: 1rem;
+          --border-radius-xl: 1.5rem;
+          --border-radius-2xl: 2rem;
+          --border-radius-full: 9999px;
+      }
+
+
+      .user-avatar {
+          width: 2.5rem;
+          height: 2.5rem;
+          border-radius: 50%;
+          border: 2px solid var(--accent);
+          object-fit: cover;
+
+      }
+      .main-content {
+          flex: 1;
+          width: 100%;
+          position: relative;
+      }
+
+      .background-overlay {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          overflow: hidden;
+      }
+
+      .background-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          filter: saturate(200%) contrast(125%) blur(4px);
+      }
+
+      .background-gradient {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to top right, #0f172a, #3730a3, #be185d);
+          opacity: 0.95;
+      }
+
+      .content-wrapper {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          z-index: 10;
+          padding: 1rem;
+      }
+
+      @media (min-width: 640px) {
+          .content-wrapper {
+              padding: 1.5rem;
+          }
+      }
+
+      @media (min-width: 1024px) {
+          .content-wrapper {
+              padding: 2rem;
+          }
+      }
+
+      .tour-details-container {
+          background-color: rgba(15, 23, 42, 0.6);
+          backdrop-filter: blur(20px);
+          border-radius: 1.5rem;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          overflow: hidden;
+      }
+
+      /* Image Gallery */
+      .image-gallery {
+          position: relative;
+      }
+
+      .gallery-scroll {
+          display: flex;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+      }
+
+      .gallery-scroll::-webkit-scrollbar {
+          display: none;
+      }
+
+      .gallery-scroll {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
+
+      .gallery-image {
+          flex-shrink: 0;
+          width: 100%;
+          height: 400px;
+          scroll-snap-align: start;
+          object-fit: contain;
+      }
+
+      @media (min-width: 768px) {
+          .gallery-image {
+              width: 50%;
+          }
+      }
+
+      .gallery-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+      }
+
+      .gallery-button {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background-color: rgba(255, 255, 255, 0.2);
+          color: white;
+          padding: 0.5rem;
+          border-radius: 50%;
+          backdrop-filter: blur(4px);
+          border: none;
+          cursor: pointer;
+          transition: background-color 0.3s;
+      }
+
+      .gallery-button:hover {
+          background-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .gallery-button-prev {
+          left: 1rem;
+      }
+
+      .gallery-button-next {
+          right: 1rem;
+      }
+
+      /* Tour Content */
+      .tour-content {
+          padding: 1.5rem;
+      }
+
+      @media (min-width: 768px) {
+          .tour-content {
+              padding: 2rem;
+          }
+      }
+
+      .tour-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 2rem;
+      }
+
+      @media (min-width: 768px) {
+          .tour-grid {
+              grid-template-columns: 2fr 1fr;
+          }
+      }
+
+      .tour-info {
+          grid-column: span 2;
+      }
+
+      @media (min-width: 768px) {
+          .tour-info {
+              grid-column: span 1;
+          }
+      }
+
+      .tour-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.875rem;
+          font-weight: 700;
+          color: white;
+          margin-bottom: 1rem;
+      }
+
+      @media (min-width: 640px) {
+          .tour-title {
+              font-size: 2.25rem;
+          }
+      }
+
+      .tour-description {
+          color: #cbd5e1;
+          margin-bottom: 1.5rem;
+          line-height: 1.75;
+      }
+
+      .tour-reviews {
+          border-top: 1px solid #374151;
+          padding-top: 1.5rem;
+      }
+
+      .reviews-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: white;
+          margin-bottom: 1rem;
+      }
+
+      .reviews-list {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+      }
+
+      .review-item {
+          display: flex;
+          gap: 1rem;
+      }
+
+      .review-avatar {
+          width: 3rem;
+          height: 3rem;
+          border-radius: 50%;
+          border: 2px solid var(--secondary);
+          object-fit: cover;
+      }
+
+      .review-content {
+          flex: 1;
+      }
+
+      .review-author {
+          font-weight: 700;
+          color: white;
+      }
+
+      .review-rating {
+          display: flex;
+          align-items: center;
+          color: var(--accent);
+      }
+
+      .review-text {
+          color: #cbd5e1;
+          margin-top: 0.5rem;
+      }
+      .review-date, .no-reviews
+      {
+          color:white;
+      }
+      .tour-sidebar {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+      }
+
+      .price-card, .rating-card {
+          background-color: rgba(30, 41, 59, 0.5);
+          padding: 1.5rem;
+          border-radius: 0.75rem;
+          border: 1px solid #374151;
+      }
+
+      .price-label {
+          font-size: 1.125rem;
+          color: #cbd5e1;
+      }
+
+      .price-amount {
+          font-size: 2.25rem;
+          font-weight: 700;
+          color: white;
+      }
+
+      .price-note {
+          font-size: 0.875rem;
+          color: #9ca3af;
+      }
+
+      .rating-label {
+          font-size: 1.125rem;
+          color: #cbd5e1;
+          margin-bottom: 0.5rem;
+      }
+
+      .rating-display {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+      }
+
+      .rating-stars {
+          display: flex;
+          color: var(--accent);
+          font-size: 1.5rem;
+      }
+
+      .rating-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: white;
+      }
+
+      .rating-count {
+          font-size: 0.875rem;
+          color: #9ca3af;
+          margin-top: 0.25rem;
+      }
+
+      .action-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          padding-top: 1rem;
+      }
+
+      .button {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 0.5rem;
+          width: 100%;
+          border-radius: 0.75rem;
+          padding: 0.75rem 1rem;
+          font-size: 1rem;
+          font-weight: 700;
+          text-decoration: none;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s;
+      }
+
+      .button-favorite {
+          background: linear-gradient(to right, #ec4899, #f43f5e);
+          color: white;
+          box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.5);
+      }
+
+      .button-favorite:hover {
+          background: linear-gradient(to right, rgba(236, 72, 153, 0.9), rgba(244, 63, 94, 0.9));
+          transform: scale(1.05);
+          box-shadow: 0 20px 25px -5px rgba(236, 72, 153, 0.7);
+      }
+
+      .button-review {
+          background-color: #374151;
+          color: white;
+      }
+
+      .button-review:hover {
+          background-color: #4b5563;
+      }
+
+      .button-book {
+          background: linear-gradient(to right, var(--primary), #818cf8);
+          color: white;
+          box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.5);
+      }
+
+      .button-book:hover {
+          background: linear-gradient(to right, rgba(79, 70, 229, 0.9), rgba(129, 140, 248, 0.9));
+          transform: scale(1.05);
+          box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.7);
+      }
+      @keyframes gradientAnimation {
+          0% {
+              background-position: 0% 50%;
+          }
+          50% {
+              background-position: 100% 50%;
+          }
+          100% {
+              background-position: 0% 50%;
+          }
+      }
+
+      .review-form-container {
+          margin-top: 2rem;
+          padding-top: 2rem;
+          border-top: 1px solid #374151;
+      }
+
+      .review-form {
+          background: rgba(30, 41, 59, 0.5);
+          padding: 1.5rem;
+          border-radius: 0.75rem;
+          border: 1px solid #374151;
+      }
+
+      .review-form-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: white;
+          margin-bottom: 1rem;
+      }
+
+      .rating-input {
+          margin-bottom: 1rem;
+      }
+
+      .rating-input label {
+          display: block;
+          color: #cbd5e1;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+      }
+
+      .star-rating {
+          display: flex;
+          gap: 0.25rem;
+          margin-bottom: 0.5rem;
+      }
+
+      .star {
+          font-size: 2rem;
+          color: #666;
+          cursor: pointer;
+          transition: color 0.2s ease;
+          user-select: none;
+      }
+
+      .star:hover,
+      .star.hover {
+          color: #fbbf24;
+      }
+
+      .star.active {
+          color: #f59e0b;
+      }
+
+      .rating-value-display {
+          color: #cbd5e1;
+          font-size: 0.875rem;
+      }
+
+      .comment-input {
+          margin-bottom: 1.5rem;
+      }
+
+      .comment-input label {
+          display: block;
+          color: #cbd5e1;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+      }
+
+      .comment-input textarea {
+          width: 100%;
+          background: rgba(15, 23, 42, 0.8);
+          border: 1px solid #374151;
+          border-radius: 0.5rem;
+          padding: 0.75rem;
+          color: white;
+          font-family: inherit;
+          font-size: 0.875rem;
+          resize: vertical;
+          transition: border-color 0.2s ease;
+      }
+
+      .comment-input textarea:focus {
+          outline: none;
+          border-color: #4f46e5;
+      }
+
+      .comment-input textarea::placeholder {
+          color: #6b7280;
+      }
+
+      .char-counter {
+          text-align: right;
+          color: #666;
+          font-size: 0.75rem;
+          margin-top: 0.25rem;
+      }
+
+      .form-actions {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+      }
+
+      .button-cancel {
+          background-color: #374151;
+          color: white;
+      }
+
+      .button-cancel:hover {
+          background-color: #4b5563;
+      }
+
+      .button-submit {
+          background: linear-gradient(to right, var(--primary), #818cf8);
+          color: white;
+      }
+
+      .button-submit:hover:not(:disabled) {
+          background: linear-gradient(to right, rgba(79, 70, 229, 0.9), rgba(129, 140, 248, 0.9));
+      }
+
+      .button-submit:disabled {
+          background-color: #374151;
+          color: #6b7280;
+          cursor: not-allowed;
+          transform: none;
+      }
+
+      /* Адаптивность */
+      @media (max-width: 640px) {
+          .review-form {
+              padding: 1rem;
+          }
+
+          .form-actions {
+              flex-direction: column;
+          }
+
+          .star {
+              font-size: 1.75rem;
+          }
+      }
+      /* Стили для информации о туре */
+      .tour-details-info {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+      }
+
+      .tour-meta-info {
+          background: rgba(30, 41, 59, 0.5);
+          padding: 1.5rem;
+          border-radius: 0.75rem;
+          border: 1px solid #374151;
+      }
+
+      .tour-meta-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 1rem;
+      }
+
+      .tour-meta-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.75rem;
+      }
+
+      .tour-meta-icon {
+          color: var(--primary);
+          font-size: 1.5rem;
+          flex-shrink: 0;
+      }
+
+      .tour-meta-content {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+      }
+
+      .tour-meta-label {
+          font-size: 0.875rem;
+          color: #9ca3af;
+          font-weight: 500;
+      }
+
+      .tour-meta-value {
+          color: white;
+          font-weight: 600;
+      }
+
+      .tour-description-text {
+          color: #cbd5e1;
+          line-height: 1.75;
+          font-size: 1rem;
+      }
+
+      /* Стили для информации о рейсе */
+      .flight-meta-info {
+          background: rgba(30, 41, 59, 0.5);
+          padding: 1.5rem;
+          border-radius: 0.75rem;
+          border: 1px solid #374151;
+      }
+
+      .flight-route {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          margin-bottom: 1rem;
+      }
+
+      .route-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          flex: 1;
+      }
+
+      .flight-icon {
+          color: var(--primary);
+          font-size: 1.5rem;
+          flex-shrink: 0;
+      }
+
+      .route-details {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+      }
+
+      .route-details .city {
+          color: white;
+          font-weight: 600;
+          font-size: 1.125rem;
+      }
+
+      .route-details .time {
+          color: #cbd5e1;
+          font-size: 0.875rem;
+      }
+
+      .route-arrow {
+          color: var(--primary);
+          padding: 0 1rem;
+      }
+
+      .route-arrow .material-symbols-outlined {
+          font-size: 2rem;
+      }
+
+      .flight-duration {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: #cbd5e1;
+          font-size: 0.875rem;
+          padding-top: 0.5rem;
+          border-top: 1px solid #374151;
+      }
+
+      /* Адаптивность */
+      @media (max-width: 768px) {
+          .tour-meta-grid {
+              grid-template-columns: 1fr;
+          }
+
+          .flight-route {
+              flex-direction: column;
+              gap: 1rem;
+          }
+
+          .route-arrow {
+              transform: rotate(90deg);
+              padding: 0.5rem 0;
+          }
+
+          .route-item {
+              justify-content: center;
+              text-align: center;
+          }
+      }
+
+      @media (max-width: 640px) {
+          .tour-meta-info,
+          .flight-meta-info {
+              padding: 1rem;
+          }
+      }
+      /* Общие стили для модальных окон */
+      .booking-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.7);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 10000;
+          padding: 1rem;
+      }
+
+      .booking-modal {
+          background: white;
+          border-radius: 1rem;
+          width: 100%;
+          max-width: 600px;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      }
+
+      .booking-modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.5rem;
+          border-bottom: 1px solid #e5e7eb;
+      }
+
+      .booking-modal-header h3 {
+          margin: 0;
+          color: #1f2937;
+          font-size: 1.5rem;
+      }
+
+      .booking-modal-close {
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          cursor: pointer;
+          color: #6b7280;
+          padding: 0;
+          width: 2rem;
+          height: 2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+
+      .booking-modal-close:hover {
+          color: #374151;
+      }
+
+      .booking-modal-content {
+          padding: 1.5rem;
+      }
+
+      .booking-modal-footer {
+          padding: 1.5rem;
+          border-top: 1px solid #e5e7eb;
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+      }
+
+      /* Стили формы */
+      .form-section {
+          margin-bottom: 2rem;
+      }
+
+      .form-section h4 {
+          margin: 0 0 1rem 0;
+          color: #1f2937;
+          font-size: 1.125rem;
+      }
+
+      .travelers-input {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          justify-content: center;
+      }
+
+      .counter-btn {
+          width: 2.5rem;
+          height: 2.5rem;
+          border: 2px solid #e5e7eb;
+          background: white;
+          border-radius: 0.5rem;
+          font-size: 1.25rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+
+      .counter-btn:hover:not(:disabled) {
+          border-color: #4f46e5;
+          color: #4f46e5;
+      }
+
+      .counter-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+      }
+
+      .travelers-count {
+          font-size: 1.25rem;
+          font-weight: 600;
+          min-width: 2rem;
+          text-align: center;
+      }
+
+      /* Стили для выбора транспорта и багажа */
+      .transportation-options,
+      .baggage-options {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+      }
+
+      .transport-option,
+      .baggage-option {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.75rem;
+          padding: 1rem;
+          border: 2px solid #e5e7eb;
+          border-radius: 0.75rem;
+          cursor: pointer;
+          transition: all 0.2s;
+      }
+
+      .transport-option:hover:not(.disabled),
+      .baggage-option:hover {
+          border-color: #4f46e5;
+      }
+
+      .transport-option.disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+      }
+
+      .transport-option input[type="radio"],
+      .baggage-option input[type="radio"] {
+          display: none;
+      }
+
+      .radio-custom {
+          width: 1.25rem;
+          height: 1.25rem;
+          border: 2px solid #d1d5db;
+          border-radius: 50%;
+          margin-top: 0.125rem;
+          position: relative;
+          flex-shrink: 0;
+      }
+
+      .transport-option input[type="radio"]:checked + .radio-custom,
+      .baggage-option input[type="radio"]:checked + .radio-custom {
+          border-color: #4f46e5;
+          background: #4f46e5;
+      }
+
+      .transport-option input[type="radio"]:checked + .radio-custom::after,
+      .baggage-option input[type="radio"]:checked + .radio-custom::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 0.5rem;
+          height: 0.5rem;
+          background: white;
+          border-radius: 50%;
+      }
+
+      .option-content {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+      }
+
+      .option-title {
+          font-weight: 600;
+          color: #1f2937;
+      }
+
+      .option-description {
+          font-size: 0.875rem;
+          color: #6b7280;
+      }
+
+      /* Стили для выбора города */
+      .departure-city-select {
+          width: 100%;
+          padding: 0.75rem;
+          border: 2px solid #e5e7eb;
+          border-radius: 0.5rem;
+          font-size: 1rem;
+          background: white;
+      }
+
+      .departure-city-select:focus {
+          outline: none;
+          border-color: #4f46e5;
+      }
+
+      /* Стили для выбора мест в самолете */
+      .seat-selection {
+          display: flex;
+          gap: 2rem;
+      }
+
+      .aircraft-layout {
+          flex: 2;
+      }
+
+      .cabin-title {
+          text-align: center;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          color: #1f2937;
+      }
+
+      .seats-container {
+          background: #f8fafc;
+          padding: 1.5rem;
+          border-radius: 0.75rem;
+          border: 1px solid #e2e8f0;
+          max-height: 400px;
+          overflow-y: auto;
+      }
+
+      .seat-row {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 0.5rem;
+          justify-content: center;
+      }
+
+      .row-number {
+          width: 2rem;
+          text-align: center;
+          font-weight: 600;
+          color: #64748b;
+      }
+
+      .seat {
+          width: 2.5rem;
+          height: 2.5rem;
+          border: 2px solid #cbd5e1;
+          border-radius: 0.375rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.75rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          background: white;
+      }
+
+      .seat.available:hover {
+          border-color: #4f46e5;
+          background: #eef2ff;
+      }
+
+      .seat.selected {
+          background: #4f46e5;
+          color: white;
+          border-color: #4f46e5;
+      }
+
+      .seat.occupied {
+          background: #ef4444;
+          color: white;
+          border-color: #dc2626;
+          cursor: not-allowed;
+      }
+
+      .seat-legend {
+          display: flex;
+          gap: 1rem;
+          justify-content: center;
+          margin-top: 1rem;
+          padding-top: 1rem;
+          border-top: 1px solid #e2e8f0;
+      }
+
+      .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.875rem;
+          color: #64748b;
+      }
+
+      .legend-item .seat {
+          cursor: default;
+          width: 1.5rem;
+          height: 1.5rem;
+          font-size: 0.5rem;
+      }
+
+      .selected-seats-info {
+          flex: 1;
+          background: #f8fafc;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          border: 1px solid #e2e8f0;
+          align-self: flex-start;
+      }
+
+      .selected-seats-info h5 {
+          margin: 0 0 0.5rem 0;
+          color: #1f2937;
+      }
+
+      .selected-seats-list {
+          font-size: 0.875rem;
+          color: #64748b;
+          min-height: 1.5rem;
+          margin-bottom: 0.5rem;
+      }
+
+      /* Стили для багажа */
+      .baggage-counter {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-top: 0.5rem;
+          justify-content: center;
+      }
+
+      /* Стили для итоговой информации */
+      .booking-summary {
+          background: #f9fafb;
+          padding: 1.5rem;
+          border-radius: 0.75rem;
+          border: 1px solid #e5e7eb;
+      }
+
+      .booking-summary h4 {
+          margin: 0 0 1rem 0;
+          color: #1f2937;
+      }
+
+      .summary-details {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+      }
+
+      .summary-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid #e5e7eb;
+      }
+
+      .summary-row:last-child {
+          border-bottom: none;
+      }
+
+      .summary-row.total-price {
+          font-weight: 600;
+          font-size: 1.125rem;
+          color: #1f2937;
+          border-top: 2px solid #e5e7eb;
+          margin-top: 0.5rem;
+          padding-top: 1rem;
+      }
+
+      /* Кнопки */
+      .button-confirm-booking {
+          background: linear-gradient(to right, var(--primary), #818cf8);
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          cursor: pointer;
+      }
+
+      .button-confirm-booking:hover:not(:disabled) {
+          background: linear-gradient(to right, rgba(79, 70, 229, 0.9), rgba(129, 140, 248, 0.9));
+      }
+
+      .button-confirm-booking:disabled {
+          background: #9ca3af;
+          cursor: not-allowed;
+      }
+
+      .button-cancel {
+          background: #6b7280;
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          cursor: pointer;
+      }
+
+      .button-cancel:hover {
+          background: #374151;
+      }
+
+      /* Адаптивность */
+      @media (max-width: 768px) {
+          .booking-modal {
+              margin: 1rem;
+          }
+
+          .booking-modal-header,
+          .booking-modal-content,
+          .booking-modal-footer {
+              padding: 1rem;
+          }
+
+          .transport-option,
+          .baggage-option {
+              padding: 0.75rem;
+          }
+
+          .seat-selection {
+              flex-direction: column;
+              gap: 1rem;
+          }
+
+          .seats-container {
+              padding: 1rem;
+          }
+
+          .seat {
+              width: 2rem;
+              height: 2rem;
+              font-size: 0.625rem;
+          }
+      }
+
+      @media (max-width: 480px) {
+          .booking-modal-footer {
+              flex-direction: column;
+          }
+
+          .button-confirm-booking,
+          .button-cancel {
+              width: 100%;
+          }
+      }
+  </style>
+</head>
+<body>
+<div class="page-container">
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <h1 class="logo-text">AeroTour</h1>
+        </div>
+        <nav class="navigation">
+          <a class="nav-link active" href="/client/search">
+            <span class="material-symbols-outlined">home</span>
+            <span class="nav-link-text">Главное меню</span>
+          </a>
+          <a class="nav-link" href="/client/favorites">
+            <span class="material-symbols-outlined">favorite</span>
+            <span class="nav-link-text">Избранное</span>
+          </a>
+
+          <a class="nav-link" href="/client/support">
+            <span class="material-symbols-outlined">support_agent</span>
+            <span class="nav-link-text">Поддержка</span>
+          </a>
+          <a class="nav-link" href="/client/calendar">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <span class="nav-link-text">Календарь</span>
+          </a>
+          <a class="nav-link" href="/client/profile">
+            <span class="material-symbols-outlined">person</span>
+            <span class="nav-link-text">Личный кабинет</span>
+          </a>
+        </nav>
+        <div class="header-actions">
+          <button class="notification-button">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="icon-button" id="logoutBtn">
+            <span class="material-symbols-outlined">logout</span>
+          </button>
+          <img alt="User avatar" class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="main-content">
+    <div class="background-overlay">
+      <img alt="Travel background image" class="background-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvFQ4WwtcqN9-Uj6niAbCJGw4MGcHVEMp2QLYdDe_ICVoAf3zp4kfItHHUX41smaWmISHbOyW67SzyyATdlws0OzpMSlup9tXfXfNckG05rq03uyTZwele_-iGrdH5oBJE8-tIndXhjU2Bi5MWFvDimL8dVAJTxofeX3eCg1KROwvTaP_h5AG1JFtZ64fGgKh85Bkn8GyqWpvd6ITd0V92oDjEEBdZHnJxvSwhnFaZOIJU8FpW3bAiRW6JzH7aHC6vpvkrsZ8gGCM"/>
+      <div class="background-gradient"></div>
+    </div>
+    <div class="content-wrapper">
+      <div class="container">
+        <div class="tour-details-container">
+          <div class="image-gallery">
+            <div class="gallery-scroll">
+              <div class="gallery-image">
+                <img alt="Image of the destination 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJUN4vNac1sQNem269Me5g8q2pddP1wbyp4K47EiGdX4Tl3TbZtDkFdsRcF_llNcaphlwkhTbaLy5mE1Q3VFt5JhmAaldVGtD4J1tnrE3s-qaxLTW2FgAkl0YzS7ZgT3A4TTlQvwf3OragVh2fg-R26-DnwRTZfO6Mnn1QYgXBwwn08w36apl1rgyOvoXql1lFbFthqN-5XbDRVfeb9-gGj7rLMd-wWQ1V4WJPCPutDvpIvG8P0p74b_MdaJzMJPjXVqxDh1c90-w"/>
+              </div>
+              <div class="gallery-image">
+                <img alt="Image of the destination 2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKI0bj5WJtJ5eAjDCO4fEjmv8IomtKIeeeYWdLCQv1u2SyDZRo4IDEKwqYiDw8y4kiOoIEsbWZAAQCuhbMCyXsfLd8CYqtIVH9teIePH1rbeINsRMTYGAfmZRJbPlaCA5gedOCcQh6VJ3FMlYmVczO4SuCLWsJ0jd_pnFmrTGFDx0NgNSvNs-z0kjDNnTMUssYdMb3A_eLK3B4mdpliSX2_ALHZGTjFkE4cOAI1umP80Yryj2dEyxrZWDNrd-RYWyiq6hOmS5jxjc"/>
+              </div>
+              <div class="gallery-image">
+                <img alt="Image of the destination 3" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBefBSYbvBCePK26aeVkdAV2h4tl08eLmZp3URJFBR_Tyw1_QCnWhiE_IAJ50leK5ne351u82PHWYv1BfAt-pVhqgVPEzFb2v55qUzH9S7w4P9wEqN-kL9pMoh2DOG_vmgXtuDlkEvOJ5Y60Vy9kr1N2t7HDsaMI2DQIZMYRqMaYutYoGjPYruLeZmEoaPy-6QSEYRkqZEu1j6_1-kqFCSxnyXfP9Rk0ZphFJdqCT2dRpgZ9CFSMtajy6oicA7VTjSxEhYNkxYamk4"/>
+              </div>
+              <div class="gallery-image">
+                <img alt="Image of the destination 4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaaIbcvS6a6uwBIMlwmMKSR6VF2OZDEfRHZMI0O4stm7Ily2hltQd-rR2sjWJt6ImQIZLVrrPFO77yf7l0cWvAPZRhx9NdPkj1c8ZlJB0U93Q64irSS18PY-3uxXQ5v3eUOnL52fG77cUSZaxe1pv4fCp7VRlt9z7x9WZRxcmy2u-dE4y_LaXl-Q5EHTIy-yAsoc3VVnWstaRGU_rjudCmW8JzZQfybjtmOC-C3IJA12VnGS4tqj9zAXrXiJYbUMq3nFkYgXol3P8"/>
+              </div>
+            </div>
+            <button class="gallery-button gallery-button-prev">
+              <span class="material-symbols-outlined">arrow_back_ios_new</span>
+            </button>
+            <button class="gallery-button gallery-button-next">
+              <span class="material-symbols-outlined">arrow_forward_ios</span>
+            </button>
+          </div>
+          <div class="tour-content">
+            <div class="tour-grid">
+              <div class="tour-info">
+                <h2 class="tour-title">Незабываемый тур по Мальдивам</h2>
+                <p class="tour-description">
+                  Откройте для себя рай на земле с нашим эксклюзивным туром на Мальдивы. Вас ждут белоснежные пляжи, кристально чистая вода Индийского океана, роскошные виллы на воде и незабываемые закаты. Погрузитесь в мир спокойствия и релакса, наслаждаясь дайвингом, сноркелингом и изысканной кухней. Этот тур – идеальный выбор для романтического отдыха или семейного приключения.
+                </p>
+                <div class="tour-reviews">
+                  <h3 class="reviews-title">Отзывы клиентов</h3>
+                  <div class="reviews-list">
+                    <div class="review-item">
+                      <img alt="User avatar" class="review-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdVbEuoQDzn9EnBPitcMCaDUen5aS1BPkvuqwm6YJB21vEUHMf8Kj_u6ekI1CUeR01gGTBW12bZgys2Dyd1n1ZpQ1ZbTLw-FZHYZPxlwJiVTuYPcN5NQCw2VzftNx_kaidiYb4AOOpszIs1eW1FzI83sUA6SMSXXFPNlBPr0yLiN_HK6STRQJWJ04xACqFEH2hWLOm-uETyQl4y5TFOUx-pY7XZ7FOIdaIIPxZ7Yarf8l-q78fBdOQI4yYmCMFZnimZrenTevoTVI"/>
+                      <div class="review-content">
+                        <p class="review-author">Анна Иванова</p>
+                        <div class="review-rating">
+                          <span class="material-symbols-outlined">star</span>
+                          <span class="material-symbols-outlined">star</span>
+                          <span class="material-symbols-outlined">star</span>
+                          <span class="material-symbols-outlined">star</span>
+                          <span class="material-symbols-outlined">star</span>
+                        </div>
+                        <p class="review-text">Это было лучшее путешествие в моей жизни! Организация на высшем уровне, отель превзошел все ожидания. Спасибо, AeroTour!</p>
+                      </div>
+                    </div>
+                    <div class="review-item">
+                      <img alt="User avatar" class="review-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-sruO-jBRYalFVRkZa62994hRYlLa_v7e8eNxzaPOKV7QAnYA_EijEJaldkDlpDB_ESPlbrd7LwmIhWuZM-V57dnKH6MByptaC4jjwBPCbVf3XH5guNJwXyj6jmRjgVwoS8amNbt9Y_gdsIIoONVhBhuEyDbWaiBzskJiSCOZWg9HrsglhJGffTPyd-xl4g4SrLi6YGTaOi3qwwr-FI05qewJr4_zF-ZyocgJ22KbAwyZN1syKsdHzMZ4a_hFnx-aVkNu8qx3BIk"/>
+                      <div class="review-content">
+                        <p class="review-author">Петр Сидоров</p>
+                        <div class="review-rating">
+                          <span class="material-symbols-outlined">star</span>
+                          <span class="material-symbols-outlined">star</span>
+                          <span class="material-symbols-outlined">star</span>
+                          <span class="material-symbols-outlined">star</span>
+                          <span class="material-symbols-outlined">star_half</span>
+                        </div>
+                        <p class="review-text">Все было замечательно, но хотелось бы больше разнообразия в экскурсиях. В остальном - полный восторг.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tour-sidebar">
+                <div class="price-card">
+                  <p class="price-label">Стоимость</p>
+                  <p class="price-amount">150 000 ₽</p>
+                  <p class="price-note">за человека</p>
+                </div>
+                <div class="rating-card">
+                  <p class="rating-label">Общий рейтинг</p>
+                  <div class="rating-display">
+                    <div class="rating-stars">
+                      <span class="material-symbols-outlined">star</span>
+                      <span class="material-symbols-outlined">star</span>
+                      <span class="material-symbols-outlined">star</span>
+                      <span class="material-symbols-outlined">star</span>
+                      <span class="material-symbols-outlined">star_half</span>
+                    </div>
+                    <p class="rating-value">4.8</p>
+                  </div>
+                  <p class="rating-count">на основе 42 отзывов</p>
+                </div>
+                <div class="action-buttons">
+                  <button class="button button-favorite">
+                    <span class="material-symbols-outlined">favorite</span>
+                    Добавить в избранное
+                  </button>
+                  <button class="button button-book">
+                    Забронировать
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script type="module" src="/client/js/DetailsPage.js"></script>
+</body>
+</html>

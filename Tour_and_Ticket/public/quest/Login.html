@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>AeroTour - Welcome</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/shared/css/styles.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <header class="header1">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                        <h1 class="logo-text">
+                            <a href="/" style="text-decoration: none; color: inherit;">AeroTour</a>
+                        </h1>
+                    </div>
+                    <nav class="navigation">
+                        <a class="nav-link1" >Авиабилеты</a>
+                        <a class="nav-link1">Туры</a>
+                        <a class="nav-link1" >Отели</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <main class="main-content1">
+            <div class="login-container">
+                <div class="welcome-section">
+                    <h2 class="welcome-title">Добро пожаловать!</h2>
+                    <p class="welcome-text">
+                        Войдите в свой аккаунт, чтобы открыть мир путешествий.
+                    </p>
+                </div>
+                <div class="login-form-container">
+                    <form class="login-form">
+                        <div class="form-group">
+                            <label class="sr-only" for="email">Электронная почта</label>
+                            <input class="form-input1" id="email" name="email" placeholder="Электронная почта" required type="email"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="password">Пароль</label>
+                            <input class="form-input1" id="password" name="password" placeholder="Пароль" required type="password"/>
+                        </div>
+                        <div class="form-options">
+                            <a class="forgot-password" href="/password-reset">
+                                Забыли пароль?
+                            </a>
+                        </div>
+                        <div class="form-options">
+
+                        </div>
+                        <div class="form-submit">
+                            <button class="submit-button" type="submit">
+                                Войти
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="registration-prompt">
+                        <p class="registration-text">
+                            Нет аккаунта?
+                            <a class="registration-link" href="/registration">
+                                Зарегистрироваться
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+<script type="module" src="/quest/js/Login.js"></script>
+</body>
+</html>

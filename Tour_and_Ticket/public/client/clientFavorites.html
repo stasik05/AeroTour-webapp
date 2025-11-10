@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>AeroTour - Избранное</title>
+    <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:wght@700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link rel="stylesheet" href="/shared/css/styles.css">
+</head>
+<body>
+<div class="page-container">
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                    <h1 class="logo-text">AeroTour</h1>
+                </div>
+                <nav class="navigation">
+                    <a class="nav-link" href="/client/dashboard">
+                        <span class="material-symbols-outlined">home</span>
+                        <span class="nav-link-text">Главное меню</span>
+                    </a>
+                    <a class="nav-link" href="/client/calendar">
+                        <span class="material-symbols-outlined">calendar_month</span>
+                        <span class="nav-link-text">Календарь</span>
+                    </a>
+                    <a class="nav-link" href="/client/support">
+                        <span class="material-symbols-outlined">support_agent</span>
+                        <span class="nav-link-text">Поддержка</span>
+                    </a>
+                    <a class="nav-link" href="/client/profile">
+                        <span class="material-symbols-outlined">person</span>
+                        <span class="nav-link-text">Личный кабинет</span>
+                    </a>
+                    <a class="nav-link active" href="/client/favorites">
+                        <span class="material-symbols-outlined">favorite</span>
+                        <span class="nav-link-text">Избранное</span>
+                    </a>
+                </nav>
+                <div class="header-actions">
+                    <button class="notification-button">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+                    <img alt="User avatar" class="user-avatar" id="userAvatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="background-overlay">
+            <img alt="Background image of a winding road in the mountains" class="background-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2HLB5G4IOHphqH3RnrG-AVKxSNiWI2BXW_VZGD9PBgn-KYXQyO0bwLO5hXP4fA105d1wM2Bu65EAPMv9rlj3hmIbDA2QkcK3-CrpfgNVNjfNPv5-ANXuy2du0KqpZTd0xKiK7TFeI66KDELDV1g8lI9_iDSL9vhmylqdM0IhIpFiiTgMmLeMrjmUrnAL5NrbSKgzTl98xngx95TtDrhJfaG4giJT713MC7Lfqgw-l5nPVkVaCbDxQ-pLTMAm6lztWtpGRY7BMsvc"/>
+            <div class="background-gradient"></div>
+        </div>
+        <div class="content-wrapper">
+            <div class="container">
+                <div class="page-header">
+                    <h2 class="page-title">Ваше Избранное</h2>
+                    <p class="page-subtitle">Сохраненные туры и авиабилеты для вашего следующего приключения</p>
+                </div>
+
+                <div class="favorites-section">
+                    <!-- Сетка для карточек избранного -->
+                    <div class="favorites-grid" id="favoritesContainer">
+                        <div class="loading">
+                            <span class="material-symbols-outlined">refresh</span>
+                            <p>Загрузка избранного...</p>
+                        </div>
+                    </div>
+
+                    <!-- Контейнер для кнопки "Показать больше" -->
+                    <div class="load-more-container" style="display: none;">
+                        <button class="load-more-button">
+                            Показать больше
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script type="module" src="js/ClientFavorites.js"></script>
+</body>
+</html>
