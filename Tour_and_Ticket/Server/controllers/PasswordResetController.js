@@ -48,10 +48,7 @@ class PasswordResetController {
           message: 'Email и код обязательны'
         });
       }
-
-      // Проверяем без пометки как использованный
       const verifiedCode = await PasswordResetService.verifyCode(email, code, false);
-
       if (!verifiedCode) {
         return res.status(400).json({
           success: false,
@@ -90,8 +87,6 @@ class PasswordResetController {
           message: 'Пароль должен содержать минимум 6 символов'
         });
       }
-
-      // Проверяем и помечаем как использованный
       const verifiedCode = await PasswordResetService.verifyCode(email, code, true);
       if (!verifiedCode) {
         return res.status(400).json({

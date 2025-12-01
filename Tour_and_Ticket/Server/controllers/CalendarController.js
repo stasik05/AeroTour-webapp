@@ -55,9 +55,6 @@ class CalendarController {
       `;
 
       const [bookings] = await pool.execute(query, [userId]);
-
-      console.log('Найдено бронирований:', bookings.length);
-
       const formattedBookings = bookings.map(booking => {
         if (booking.trip_type === 'tour') {
           return {
@@ -100,7 +97,6 @@ class CalendarController {
           };
         }
       }).filter(booking => booking !== undefined);
-      console.log('✅ Отформатировано бронирований:', formattedBookings.length);
       res.json({
         success: true,
         bookings: formattedBookings
@@ -117,7 +113,6 @@ class CalendarController {
     try {
       const userId = req.user.userId;
       const { bookingId } = req.params;
-      console.log(`🔍 Запрос деталей бронирования: ${bookingId} для пользователя: ${userId}`);
       const query = `
       SELECT
         b.id,
@@ -158,7 +153,6 @@ class CalendarController {
     `;
       const [bookings] = await pool.execute(query, [bookingId, userId]);
       if (bookings.length === 0) {
-        console.log(` Бронирование не найдено: ${bookingId}`);
         return res.status(404).json({
           success: false,
           message: 'Бронирование не найдено'
@@ -166,13 +160,6 @@ class CalendarController {
       }
 
       const booking = bookings[0];
-      console.log(`Найдено бронирование:`, {
-        id: booking.id,
-        type: booking.trip_type,
-        title: booking.trip_type === 'tour' ? booking.tour_title : `Рейс ${booking.flight_number}`,
-        selected_seats_raw: booking.selected_seats,
-        selected_seats_type: typeof booking.selected_seats
-      });
       let tripDetails;
       if (booking.trip_type === 'tour') {
         tripDetails = {
@@ -202,10 +189,6 @@ class CalendarController {
         let selectedSeats = null;
         try {
           if (booking.selected_seats) {
-            console.log(`🔍 Обработка selected_seats:`, {
-              raw: booking.selected_seats,
-              type: typeof booking.selected_seats
-            });
             if (typeof booking.selected_seats === 'string') {
               if (booking.selected_seats.startsWith('[') && booking.selected_seats.endsWith(']')) {
                 selectedSeats = JSON.parse(booking.selected_seats);
@@ -219,18 +202,14 @@ class CalendarController {
             else if (!booking.selected_seats) {
               selectedSeats = null;
             }
-            console.log(`Обработанные selected_seats:`, selectedSeats);
           }
         } catch (error) {
-          console.warn(`Ошибка парсинга selected_seats:`, error);
-          console.log(`🔍 Проблемные данные selected_seats:`, booking.selected_seats);
           if (typeof booking.selected_seats === 'string') {
             const cleaned = booking.selected_seats.replace(/[\[\]"]/g, '');
             selectedSeats = cleaned.split(',').map(seat => seat.trim()).filter(seat => seat);
           } else {
             selectedSeats = null;
           }
-          console.log(`Fallback selected_seats:`, selectedSeats);
         }
         tripDetails = {
           id: booking.id,
@@ -286,18 +265,12 @@ class CalendarController {
           }
         };
       }
-      console.log(`Отправка деталей поездки:`, {
-        id: tripDetails.id,
-        type: tripDetails.type,
-        title: tripDetails.title,
-        seats: tripDetails.travelers?.seats
-      });
       res.json({
         success: true,
         trip: tripDetails
       });
     } catch (error) {
-      console.error('❌ Ошибка загрузки деталей поездки:', error);
+      console.error('Ошибка загрузки деталей поездки:', error);
       res.status(500).json({
         success: false,
         message: 'Ошибка при загрузке информации о поездке'
@@ -380,7 +353,6 @@ class CalendarController {
       res.setHeader('Content-Disposition', 'attachment; filename="aerotour-calendar.ics"');
       res.send(icalString);
     } catch (error) {
-      console.error('Error exporting iCal:', error);
       res.status(500).json({
         success: false,
         message: 'Ошибка при экспорте календаря'
@@ -401,7 +373,6 @@ class CalendarController {
     try {
       return JSON.parse(jsonString);
     } catch (error) {
-      console.warn('Ошибка парсинга JSON:', jsonString, error);
       return null;
     }
   }

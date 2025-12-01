@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>AeroTour - Удаление перелета</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <link rel="stylesheet" href="/shared/css/styles.css">
+  <style>
+      .page-container {
+          max-width: 1000px;
+          margin: 2rem auto;
+      }
+
+      .flights-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 1.5rem;
+          margin-top: 2rem;
+      }
+
+      .flight-card {
+          background: rgba(15, 23, 42, 0.8);
+          backdrop-filter: blur(20px);
+          border-radius: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 1.5rem;
+          color: white;
+          transition: all 0.3s;
+      }
+
+      .flight-card:hover {
+          border-color: #ef4444;
+          transform: translateY(-4px);
+      }
+
+      .flight-image {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+          border-radius: 0.5rem;
+          margin-bottom: 1rem;
+      }
+
+      .flight-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.25rem;
+          margin-bottom: 0.5rem;
+          color: white;
+      }
+
+      .flight-details1 {
+          color: #cbd5e1;
+          font-size: 0.875rem;
+          margin-bottom: 1rem;
+      }
+
+      .flight-price {
+          font-size: 1.125rem;
+          font-weight: bold;
+          color: #f59e0b;
+          margin-bottom: 1rem;
+      }
+
+      .delete-btn {
+          width: 100%;
+          padding: 0.75rem;
+          background: #ef4444;
+          color: white;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+      }
+
+      .delete-btn:hover {
+          background: #dc2626;
+      }
+
+      .section-title {
+          font-family: 'Playfair Display', serif;
+          color: white;
+          text-align: center;
+          margin-bottom: 1rem;
+          font-size: 2rem;
+      }
+
+      .section-subtitle {
+          color: #cbd5e1;
+          text-align: center;
+          margin-bottom: 2rem;
+      }
+
+      .no-flights {
+          text-align: center;
+          color: #94a3b8;
+          padding: 3rem;
+          background: rgba(15, 23, 42, 0.8);
+          backdrop-filter: blur(20px);
+          border-radius: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .back-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          background: #6b7280;
+          color: white;
+          text-decoration: none;
+          border-radius: 0.5rem;
+          margin-bottom: 2rem;
+          transition: all 0.3s;
+      }
+
+      .back-btn:hover {
+          background: #4b5563;
+      }
+
+      .availability-status {
+          padding: 0.5rem;
+          border-radius: 0.375rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          margin-bottom: 0.75rem;
+          text-align: center;
+      }
+
+      .availability-status.available {
+          background: rgba(34, 197, 94, 0.15);
+          color: #16a34a;
+          border: 1px solid rgba(34, 197, 94, 0.3);
+      }
+
+      .availability-status.unavailable {
+          background: rgba(239, 68, 68, 0.15);
+          color: #dc2626;
+          border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <h1 class="logo-text">AeroTour</h1>
+        </div>
+        <nav class="navigation">
+          <a class="nav-link" href="/manager/main-menu">
+            <span class="material-symbols-outlined">home</span>
+            <span class="nav-link-text">Главное меню</span>
+          </a>
+          <a class="nav-link" href="/manager/main-menu/manager-support">
+            <span class="material-symbols-outlined">support_agent</span>
+            <span class="nav-link-text">Поддержка</span>
+          </a>
+          <a class="nav-link active" href="/flights/delete">
+            <span class="material-symbols-outlined">delete</span>
+            <span class="nav-link-text">Удалить перелет</span>
+          </a>
+          <a class="nav-link" href="/manager/main-menu/profile">
+            <span class="material-symbols-outlined">person</span>
+            <span class="nav-link-text">Личный кабинет</span>
+          </a>
+        </nav>
+        <div class="user-actions">
+          <button class="notification-button">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <img alt="User avatar" class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="main-content">
+    <div class="background-animation">
+      <div class="background-overlay"></div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+    <div class="content-overlay">
+      <div class="container">
+        <div class="page-container">
+          <a href="/manager/main-menu/flights" class="back-btn">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Назад
+          </a>
+
+          <h2 class="section-title">Удаление перелетов</h2>
+          <p class="section-subtitle">Выберите перелет для удаления. Это действие нельзя отменить.</p>
+
+          <div id="flightsContainer">
+            <div class="no-flights">
+              <span class="material-symbols-outlined" style="font-size: 3rem; margin-bottom: 1rem;">hourglass_empty</span>
+              <p>Загрузка перелетов...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/manager/js/DeleteFlight.js"></script>
+</body>
+</html>

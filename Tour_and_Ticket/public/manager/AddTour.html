@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>AeroTour - Добавление тура</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <link rel="stylesheet" href="/shared/css/styles.css">
+  <style>
+      .form-container {
+          max-width: 800px;
+          margin: 2rem auto;
+          padding: 2rem;
+          background: rgba(15, 23, 42, 0.8);
+          backdrop-filter: blur(20px);
+          border-radius: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: white;
+      }
+
+      .form-title {
+          font-family: 'Playfair Display', serif;
+          color: white;
+          text-align: center;
+          margin-bottom: 2rem;
+          font-size: 2rem;
+      }
+
+      .form-group {
+          margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+          display: block;
+          color: #e2e8f0;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+      }
+
+      .form-input, .form-textarea, .form-select {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 0.5rem;
+          background: rgba(15, 23, 42, 0.6);
+          color: white;
+          font-size: 1rem;
+      }
+
+      .form-input:focus, .form-textarea:focus, .form-select:focus {
+          outline: none;
+          border-color: #f59e0b;
+          box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+      }
+
+      .form-textarea {
+          min-height: 100px;
+          resize: vertical;
+      }
+
+      .checkbox-group {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+      }
+
+      .checkbox-group input {
+          width: auto;
+      }
+
+      .image-upload {
+          border: 2px dashed rgba(255, 255, 255, 0.3);
+          border-radius: 0.5rem;
+          padding: 2rem;
+          text-align: center;
+          margin-bottom: 1rem;
+      }
+
+      .image-preview {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+          gap: 1rem;
+          margin-top: 1rem;
+      }
+
+      .preview-item {
+          position: relative;
+          border-radius: 0.5rem;
+          overflow: hidden;
+      }
+
+      .preview-item img {
+          width: 100%;
+          height: 120px;
+          object-fit: cover;
+      }
+
+      .remove-image {
+          position: absolute;
+          top: 0.25rem;
+          right: 0.25rem;
+          background: rgba(239, 68, 68, 0.9);
+          color: white;
+          border: none;
+          border-radius: 50%;
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+
+      .form-actions {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+          margin-top: 2rem;
+      }
+
+      .btn {
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+      }
+
+      .btn-primary {
+          background: #4f46e5;
+          color: white;
+      }
+
+      .btn-primary:hover {
+          background: #4338ca;
+      }
+
+      .btn-secondary {
+          background: #6b7280;
+          color: white;
+      }
+
+      .btn-secondary:hover {
+          background: #4b5563;
+      }
+
+      .cities-input {
+          display: flex;
+          gap: 0.5rem;
+          margin-bottom: 0.5rem;
+      }
+
+      .cities-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+      }
+
+      .city-tag {
+          background: rgba(79, 70, 229, 0.3);
+          padding: 0.25rem 0.75rem;
+          border-radius: 1rem;
+          font-size: 0.875rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+      }
+
+      .remove-city {
+          background: none;
+          border: none;
+          color: white;
+          cursor: pointer;
+          padding: 0;
+      }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <h1 class="logo-text">AeroTour</h1>
+        </div>
+        <nav class="navigation">
+          <a class="nav-link" href="/manager/main-menu">
+            <span class="material-symbols-outlined">home</span>
+            <span class="nav-link-text">Главное меню</span>
+          </a>
+          <a class="nav-link" href="/manager/main-menu/manager-support">
+            <span class="material-symbols-outlined">support_agent</span>
+            <span class="nav-link-text">Поддержка</span>
+          </a>
+          <a class="nav-link active" href="/tours/add">
+            <span class="material-symbols-outlined">add</span>
+            <span class="nav-link-text">Добавить тур</span>
+          </a>
+          <a class="nav-link" href="/manager/main-menu/profile">
+            <span class="material-symbols-outlined">person</span>
+            <span class="nav-link-text">Личный кабинет</span>
+          </a>
+        </nav>
+        <div class="user-actions">
+          <button class="notification-button">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <img alt="User avatar" class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="main-content">
+    <div class="background-animation">
+      <div class="background-overlay"></div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+    <div class="content-overlay">
+      <div class="container">
+        <div class="form-container">
+          <h2 class="form-title">Добавление нового тура</h2>
+          <form id="addTourForm" enctype="multipart/form-data">
+            <div class="form-group">
+              <label class="form-label" for="title">Название тура *</label>
+              <input class="form-input" type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="description">Описание тура</label>
+              <textarea class="form-textarea" id="description" name="description" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="country">Страна *</label>
+              <input class="form-input" type="text" id="country" name="country" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="city">Город *</label>
+              <input class="form-input" type="text" id="city" name="city" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="start_date">Дата начала *</label>
+              <input class="form-input" type="date" id="start_date" name="start_date" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="end_date">Дата окончания *</label>
+              <input class="form-input" type="date" id="end_date" name="end_date" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="price">Цена (€) *</label>
+              <input class="form-input" type="number" id="price" name="price" step="0.01" min="0" required>
+            </div>
+
+            <div class="form-group">
+              <div class="checkbox-group">
+                <input type="checkbox" id="transportation_included" name="transportation_included" value="true">
+                <label class="form-label" for="transportation_included">Трансфер включен</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="checkbox-group">
+                <input type="checkbox" id="available" name="available" value="true" checked>
+                <label class="form-label" for="available">Тур доступен для бронирования</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Доступные города</label>
+              <div class="cities-input">
+                <input class="form-input" type="text" id="newCity" placeholder="Введите город">
+                <button type="button" class="btn btn-secondary" onclick="addCity()">Добавить</button>
+              </div>
+              <div class="cities-list" id="citiesList"></div>
+              <input type="hidden" id="available_cities" name="available_cities">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Изображения тура (до 4 файлов)</label>
+              <div class="image-upload">
+                <input type="file" id="images" name="images" accept="image/*" multiple style="display: none;" onchange="handleImageSelect(event)">
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('images').click()">
+                  <span class="material-symbols-outlined">add_photo_alternate</span>
+                  Выбрать изображения
+                </button>
+                <div class="image-preview" id="imagePreview"></div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <a href="/manager/main-menu/tours" class="btn btn-secondary">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Назад
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <span class="material-symbols-outlined">save</span>
+                Сохранить тур
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/manager/js/AddTour.js"></script>
+</body>
+</html>

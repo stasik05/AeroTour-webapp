@@ -1,4 +1,5 @@
 import { DetailsService } from '/shared/js/DetailsService.js';
+import {WeatherService} from '/shared/js/WeatherService.js';
 class DetailsPage
 {
   constructor() {
@@ -11,6 +12,11 @@ class DetailsPage
     this.isLoading = false;
     this.selectedRating = 0;
     this.currentData = null;
+    this.weatherData = null;
+    this.selectedCity = null;
+    this.selectedDate = null;
+    this.isWeatherLoading = false;
+    this.weatherViewMode = 'current';
     this.init();
   }
 
@@ -18,6 +24,7 @@ class DetailsPage
     try {
       await this.loadUserData();
       await this.loadDetailsData();
+      this.addWeatherButton();
       this.bindEvents();
       this.initImageGallery();
       this.setupEventListeners();
@@ -27,7 +34,751 @@ class DetailsPage
       this.showError('Ошибка загрузки данных');
     }
   }
+  addWeatherButton() {
+    const actionButtons = document.querySelector('.action-buttons');
+    if (actionButtons) {
+      const weatherButton = document.createElement('button');
+      weatherButton.className = 'button button-weather';
+      weatherButton.innerHTML = `
+        <span class="material-symbols-outlined">cloud</span>
+        Погода
+      `;
+      weatherButton.addEventListener('click', () => {
+        this.openWeatherModal();
+      });
 
+      actionButtons.appendChild(weatherButton);
+    }
+  }
+
+  openWeatherModal() {
+    const modal = document.createElement('div');
+    modal.className = 'weather-modal-overlay';
+    modal.innerHTML = `
+      <div class="weather-modal">
+        <div class="weather-modal-header">
+          <h2>
+            <span class="material-symbols-outlined">cloud</span>
+            Прогноз погоды
+          </h2>
+          <button class="weather-modal-close">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        
+        <div class="weather-modal-content">
+          <div class="weather-search-section">
+            <div class="search-input-container">
+              <input 
+                type="text" 
+                class="weather-search-input" 
+                placeholder="Введите город..."
+                maxlength="50"
+              >
+              <button class="weather-search-button">
+                <span class="material-symbols-outlined">search</span>
+                Найти
+              </button>
+            </div>
+            <div class="search-suggestions" style="display: none;"></div>
+            
+            <div class="date-selection">
+              <div class="view-mode-selector">
+                <label class="mode-option">
+                  <input type="radio" name="weatherView" value="current" checked>
+                  <span class="radio-custom"></span>
+                  <span>Текущая погода</span>
+                </label>
+                <label class="mode-option">
+                  <input type="radio" name="weatherView" value="date">
+                  <span class="radio-custom"></span>
+                  <span>На конкретную дату</span>
+                </label>
+                <label class="mode-option">
+                  <input type="radio" name="weatherView" value="range">
+                  <span class="radio-custom"></span>
+                  <span>На период</span>
+                </label>
+              </div>
+              
+              <div class="date-inputs">
+                <div class="date-input-group single-date" style="display: none;">
+                  <label>Выберите дату:</label>
+                  <input type="date" class="weather-date-input" 
+                         min="${WeatherService.getMinDate()}" 
+                         max="${WeatherService.getMaxDate()}">
+                </div>
+                
+                <div class="date-input-group range-date" style="display: none;">
+                  <div class="date-range-inputs">
+                    <div class="date-input-item">
+                      <label>С:</label>
+                      <input type="date" class="weather-start-date" 
+                             min="${WeatherService.getMinDate()}" 
+                             max="${WeatherService.getMaxDate()}">
+                    </div>
+                    <div class="date-input-item">
+                      <label>По:</label>
+                      <input type="date" class="weather-end-date" 
+                             min="${WeatherService.getMinDate()}" 
+                             max="${WeatherService.getMaxDate()}">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="weather-results">
+            <div class="weather-loading" style="display: none;">
+              <div class="loading-spinner"></div>
+              <span>Загружаем прогноз погоды...</span>
+            </div>
+            
+            <div class="weather-content" style="display: none;">
+              <div class="weather-header">
+                <h3 class="weather-location"></h3>
+                <div class="weather-date-info"></div>
+                <div class="weather-data-type"></div>
+              </div>
+              <div class="weather-data"></div>
+            </div>
+            
+            <div class="weather-welcome">
+              <div class="welcome-icon">
+                <span class="material-symbols-outlined">clear_day</span>
+              </div>
+              <h3>Узнайте прогноз погоды</h3>
+              <p>Введите город и выберите дату для просмотра прогноза погоды</p>
+              <div class="welcome-features">
+                <div class="feature">
+                  <span class="material-symbols-outlined">calendar_today</span>
+                  <span>Погода на любую дату до 2026 года</span>
+                </div>
+                <div class="feature">
+                  <span class="material-symbols-outlined">date_range</span>
+                  <span>Прогноз на период</span>
+                </div>
+                <div class="feature">
+                  <span class="material-symbols-outlined">history</span>
+                  <span>Исторические данные</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="weather-error" style="display: none;">
+              <span class="material-symbols-outlined">error</span>
+              <div class="error-content">
+                <h4>Не удалось загрузить данные</h4>
+                <p class="error-message"></p>
+                <button class="retry-button">Попробовать снова</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    this.bindWeatherModalEvents(modal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        this.closeWeatherModal();
+      }
+    });
+  }
+
+  bindWeatherModalEvents(modal) {
+    const closeBtn = modal.querySelector('.weather-modal-close');
+    const searchInput = modal.querySelector('.weather-search-input');
+    const searchButton = modal.querySelector('.weather-search-button');
+    const suggestionsContainer = modal.querySelector('.search-suggestions');
+    const viewModeRadios = modal.querySelectorAll('input[name="weatherView"]');
+    const dateInput = modal.querySelector('.weather-date-input');
+    const startDateInput = modal.querySelector('.weather-start-date');
+    const endDateInput = modal.querySelector('.weather-end-date');
+    const retryButton = modal.querySelector('.retry-button');
+
+    let searchTimeout;
+    closeBtn.addEventListener('click', () => {
+      this.closeWeatherModal();
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim();
+
+      clearTimeout(searchTimeout);
+
+      if (query.length < 2) {
+        suggestionsContainer.style.display = 'none';
+        return;
+      }
+
+      searchTimeout = setTimeout(async () => {
+        await this.searchCities(query, modal);
+      }, 500);
+    });
+    searchButton.addEventListener('click', () => {
+      this.performWeatherSearch(modal);
+    });
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        this.performWeatherSearch(modal);
+      }
+    });
+    viewModeRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        this.handleViewModeChange(e.target.value, modal);
+      });
+    });
+    startDateInput.addEventListener('change', () => {
+      if (startDateInput.value) {
+        endDateInput.min = startDateInput.value;
+        if (endDateInput.value && endDateInput.value < startDateInput.value) {
+          endDateInput.value = startDateInput.value;
+        }
+      }
+    });
+
+    endDateInput.addEventListener('change', () => {
+      if (endDateInput.value && startDateInput.value && endDateInput.value < startDateInput.value) {
+        endDateInput.value = startDateInput.value;
+      }
+    });
+    retryButton.addEventListener('click', () => {
+      if (this.selectedCity) {
+        this.loadWeatherForCity(
+          this.selectedCity.latitude,
+          this.selectedCity.longitude,
+          this.selectedCity.name,
+          modal
+        );
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.weather-search-section')) {
+        suggestionsContainer.style.display = 'none';
+      }
+    });
+  }
+
+  handleViewModeChange(mode, modal) {
+    const singleDateGroup = modal.querySelector('.single-date');
+    const rangeDateGroup = modal.querySelector('.range-date');
+
+    singleDateGroup.style.display = 'none';
+    rangeDateGroup.style.display = 'none';
+
+    this.weatherViewMode = mode;
+
+    switch (mode) {
+      case 'date':
+        singleDateGroup.style.display = 'block';
+        break;
+      case 'range':
+        rangeDateGroup.style.display = 'block';
+        break;
+      default:
+        break;
+    }
+  }
+
+  async performWeatherSearch(modal) {
+    const searchInput = modal.querySelector('.weather-search-input');
+    const query = searchInput.value.trim();
+
+    if (query.length < 2) {
+      this.showNotification('Введите название города (минимум 2 символа)', 'warning');
+      return;
+    }
+
+    await this.searchCities(query, modal);
+  }
+
+  async searchCities(query, modal) {
+    const suggestionsContainer = modal.querySelector('.search-suggestions');
+
+    try {
+      const cities = await WeatherService.searchCity(query);
+
+      if (cities.length === 0) {
+        suggestionsContainer.innerHTML = `
+          <div class="suggestion-item no-results">
+            <span class="material-symbols-outlined">search_off</span>
+            <div class="suggestion-info">
+              <div class="suggestion-name">Городы не найдены</div>
+              <div class="suggestion-details">Попробуйте изменить запрос</div>
+            </div>
+          </div>
+        `;
+        suggestionsContainer.style.display = 'block';
+        return;
+      }
+
+      suggestionsContainer.innerHTML = cities.map(city => `
+        <div class="suggestion-item" data-lat="${city.latitude}" data-lon="${city.longitude}" data-name="${city.name}">
+          <span class="material-symbols-outlined">location_on</span>
+          <div class="suggestion-info">
+            <div class="suggestion-name">${city.name}</div>
+            <div class="suggestion-details">
+              ${city.admin1 ? `${city.admin1}` : ''}${city.admin1 && city.country ? ', ' : ''}${city.country || ''}
+              ${city.population ? ` • ${this.formatPopulation(city.population)}` : ''}
+            </div>
+          </div>
+          <span class="suggestion-arrow material-symbols-outlined">chevron_right</span>
+        </div>
+      `).join('');
+
+      suggestionsContainer.style.display = 'block';
+      suggestionsContainer.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const lat = parseFloat(item.dataset.lat);
+          const lon = parseFloat(item.dataset.lon);
+          const name = item.dataset.name;
+
+          modal.querySelector('.weather-search-input').value = name;
+          suggestionsContainer.style.display = 'none';
+
+          this.loadWeatherForCity(lat, lon, name, modal);
+        });
+        item.addEventListener('mouseenter', () => {
+          item.style.backgroundColor = 'rgba(14, 165, 233, 0.1)';
+        });
+
+        item.addEventListener('mouseleave', () => {
+          item.style.backgroundColor = '';
+        });
+      });
+
+    } catch (error) {
+      console.error('Ошибка поиска городов:', error);
+      suggestionsContainer.innerHTML = `
+        <div class="suggestion-item no-results">
+          <span class="material-symbols-outlined">error</span>
+          <div class="suggestion-info">
+            <div class="suggestion-name">Ошибка поиска</div>
+            <div class="suggestion-details">Попробуйте позже</div>
+          </div>
+        </div>
+      `;
+      suggestionsContainer.style.display = 'block';
+    }
+  }
+
+  formatPopulation(population) {
+    if (population >= 1000000) {
+      return (population / 1000000).toFixed(1) + ' млн';
+    } else if (population >= 1000) {
+      return (population / 1000).toFixed(0) + ' тыс';
+    }
+    return population.toString();
+  }
+
+  async loadWeatherForCity(latitude, longitude, cityName, modal) {
+    this.isWeatherLoading = true;
+    this.selectedCity = { latitude, longitude, name: cityName };
+
+    const resultsContainer = modal.querySelector('.weather-results');
+    const loadingElement = resultsContainer.querySelector('.weather-loading');
+    const contentElement = resultsContainer.querySelector('.weather-content');
+    const welcomeElement = resultsContainer.querySelector('.weather-welcome');
+    const errorElement = resultsContainer.querySelector('.weather-error');
+    const dateInput = modal.querySelector('.weather-date-input');
+    const startDateInput = modal.querySelector('.weather-start-date');
+    const endDateInput = modal.querySelector('.weather-end-date');
+
+    let startDate = null;
+    let endDate = null;
+
+    switch (this.weatherViewMode) {
+      case 'date':
+        if (dateInput.value) {
+          startDate = dateInput.value;
+          endDate = dateInput.value;
+        }
+        break;
+      case 'range':
+        if (startDateInput.value && endDateInput.value) {
+          startDate = startDateInput.value;
+          endDate = endDateInput.value;
+        }
+        break;
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDate = startDate ? new Date(startDate) : today;
+    selectedDate.setHours(0, 0, 0, 0);
+
+    const daysDiff = Math.ceil((selectedDate - today) / (1000 * 60 * 60 * 24));
+
+    if (daysDiff > 365) {
+      this.showNotification('Прогноз доступен максимум на год вперед', 'info');
+      loadingElement.style.display = 'none';
+      return;
+    }
+    welcomeElement.style.display = 'none';
+    loadingElement.style.display = 'flex';
+    contentElement.style.display = 'none';
+    errorElement.style.display = 'none';
+
+    try {
+      this.weatherData = await WeatherService.getWeatherData(
+        latitude,
+        longitude,
+        startDate,
+        endDate
+      );
+
+
+      loadingElement.style.display = 'none';
+      contentElement.style.display = 'block';
+
+      this.renderWeatherContent(cityName, startDate, endDate, modal, daysDiff);
+
+    } catch (error) {
+      console.error('Ошибка загрузки погоды:', error);
+      loadingElement.style.display = 'none';
+      errorElement.style.display = 'flex';
+
+      if (daysDiff > 16) {
+        errorElement.querySelector('.error-message').textContent =
+          'Детальный прогноз доступен только на 16 дней. Для выбранных дат показаны климатические средние значения.';
+      } else {
+        errorElement.querySelector('.error-message').textContent =
+          error.message || 'Не удалось загрузить прогноз погоды. Попробуйте позже.';
+      }
+    } finally {
+      this.isWeatherLoading = false;
+    }
+  }
+
+  renderWeatherContent(cityName, startDate, endDate, modal, daysDiff) {
+    const { daily, metadata } = this.weatherData;
+    const weatherContent = modal.querySelector('.weather-data');
+    const locationElement = modal.querySelector('.weather-location');
+    const dateInfoElement = modal.querySelector('.weather-date-info');
+    const dataTypeElement = modal.querySelector('.weather-data-type');
+
+    locationElement.textContent = cityName;
+    let dataType = 'forecast';
+    let dataTypeText = 'Прогноз';
+    let reliability = metadata?.reliability || 'unknown';
+
+    if (metadata) {
+      switch (metadata.type) {
+        case 'historical':
+          dataType = 'historical';
+          dataTypeText = 'Исторические данные';
+          break;
+        case 'climate_forecast':
+        case 'climate_average':
+          dataType = 'climate';
+          dataTypeText = 'Климатический прогноз';
+          break;
+        case 'generated':
+          dataType = 'generated';
+          dataTypeText = 'Расчетные данные';
+          break;
+      }
+    } else {
+      const today = new Date();
+      const selectedDate = startDate ? new Date(startDate) : today;
+      if (selectedDate < today) {
+        dataType = 'historical';
+        dataTypeText = 'Исторические данные';
+      } else if (daysDiff > 16) {
+        dataType = 'climate';
+        dataTypeText = 'Климатический прогноз';
+      }
+    }
+
+    dataTypeElement.textContent = dataTypeText;
+    dataTypeElement.className = `weather-data-type ${dataType} ${reliability}`;
+    let dateInfo = '';
+    if (startDate && endDate) {
+      if (startDate === endDate) {
+        dateInfo = WeatherService.formatDateDisplay(startDate);
+      } else {
+        dateInfo = `${WeatherService.formatDateDisplay(startDate)} - ${WeatherService.formatDateDisplay(endDate)}`;
+      }
+    } else {
+      dateInfo = 'Текущая погода и прогноз на 7 дней';
+    }
+    if (metadata?.note) {
+      dateInfo += `<div class="data-reliability-note">${metadata.note}</div>`;
+    } else if (reliability === 'medium') {
+      dateInfo += `<div class="data-reliability-note">На основе климатических средних</div>`;
+    } else if (reliability === 'low') {
+      dateInfo += `<div class="data-reliability-note">Расчетные данные</div>`;
+    }
+
+    dateInfoElement.innerHTML = dateInfo;
+    if (this.weatherViewMode === 'current' || (startDate && endDate && startDate !== endDate)) {
+      this.renderWeatherForecast(weatherContent, cityName, startDate, endDate, dataType, reliability);
+    } else if (startDate && endDate && startDate === endDate) {
+      this.renderSingleDateWeather(weatherContent, startDate, dataType, reliability);
+    } else {
+      this.renderCurrentWeather(weatherContent, dataType, reliability);
+    }
+  }
+
+  renderCurrentWeather(container, dataType, reliability) {
+    const { daily } = this.weatherData;
+    const daysToShow = dataType === 'historical' ? Math.min(daily.time.length, 7) : 7;
+
+    let reliabilityBadge = '';
+    if (reliability === 'medium') {
+      reliabilityBadge = '<div class="reliability-badge medium">Средняя точность</div>';
+    } else if (reliability === 'low') {
+      reliabilityBadge = '<div class="reliability-badge low">Примерные данные</div>';
+    }
+
+    container.innerHTML = `
+      ${reliabilityBadge}
+      <div class="current-weather-section">
+        <div class="current-weather-main">
+          <div class="weather-icon-large">
+            <span class="material-symbols-outlined">
+              ${WeatherService.getWeatherIcon(daily.weather_code[0])}
+            </span>
+          </div>
+          <div class="current-weather-info">
+            <div class="current-temp">${WeatherService.formatTemperature(daily.temperature_2m_max[0])}</div>
+            <div class="current-description">
+              ${WeatherService.getWeatherDescription(daily.weather_code[0])}
+            </div>
+            <div class="current-details">
+              <span>Мин: ${WeatherService.formatTemperature(daily.temperature_2m_min[0])}</span>
+              <span>•</span>
+              <span>Ветер: ${Math.round(daily.wind_speed_10m_max?.[0] || 0)} км/ч</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="weather-forecast-section">
+        <h4>${dataType === 'historical' ? 'Погода в эти даты' : 'Прогноз на 7 дней'}</h4>
+        <div class="forecast-grid-modal">
+          ${daily.time.slice(0, daysToShow).map((date, index) => `
+            <div class="forecast-day-modal ${dataType}">
+              <div class="forecast-date">${WeatherService.formatDateShort(date)}</div>
+              <div class="forecast-icon">
+                <span class="material-symbols-outlined">
+                  ${WeatherService.getWeatherIcon(daily.weather_code[index])}
+                </span>
+              </div>
+              <div class="forecast-temps">
+                <span class="temp-max">${WeatherService.formatTemperature(daily.temperature_2m_max[index])}</span>
+                <span class="temp-min">${WeatherService.formatTemperature(daily.temperature_2m_min[index])}</span>
+              </div>
+              <div class="forecast-weather">
+                ${WeatherService.getWeatherDescription(daily.weather_code[index])}
+              </div>
+              ${daily.precipitation_probability_max?.[index] > 0 ? `
+                <div class="forecast-precipitation">
+                  <span class="material-symbols-outlined">umbrella</span>
+                  ${daily.precipitation_probability_max[index]}%
+                </div>
+              ` : daily.precipitation_sum?.[index] > 0 ? `
+                <div class="forecast-precipitation">
+                  <span class="material-symbols-outlined">water_drop</span>
+                  ${daily.precipitation_sum[index]} мм
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  renderSingleDateWeather(container, date, dataType, reliability) {
+    const { daily } = this.weatherData;
+    const index = daily.time.findIndex(d => d === date);
+
+    if (index === -1) {
+      container.innerHTML = '<div class="no-weather-data">Данные о погоде на выбранную дату недоступны</div>';
+      return;
+    }
+
+    let reliabilityBadge = '';
+    if (reliability === 'medium') {
+      reliabilityBadge = '<div class="reliability-badge medium">На основе климатических норм</div>';
+    } else if (reliability === 'low') {
+      reliabilityBadge = '<div class="reliability-badge low">Расчетные данные</div>';
+    }
+
+    container.innerHTML = `
+      ${reliabilityBadge}
+      <div class="single-date-weather-modal">
+        <div class="date-weather-header-modal">
+          <div class="weather-icon-xlarge">
+            <span class="material-symbols-outlined">
+              ${WeatherService.getWeatherIcon(daily.weather_code[index])}
+            </span>
+          </div>
+          <div class="date-weather-summary">
+            <div class="selected-date-large">${WeatherService.formatDateDisplay(date)}</div>
+            <div class="weather-description-large">
+              ${WeatherService.getWeatherDescription(daily.weather_code[index])}
+            </div>
+            <div class="temperature-range-large">
+              ${WeatherService.formatTemperature(daily.temperature_2m_min[index])} - ${WeatherService.formatTemperature(daily.temperature_2m_max[index])}
+            </div>
+          </div>
+        </div>
+
+        <div class="weather-details-grid">
+          <div class="weather-detail-card">
+            <div class="detail-icon">
+              <span class="material-symbols-outlined">thermometer</span>
+            </div>
+            <div class="detail-content">
+              <div class="detail-label">Температура</div>
+              <div class="detail-values">
+                <div class="detail-value">
+                  <span>Максимальная:</span>
+                  <span class="value">${WeatherService.formatTemperature(daily.temperature_2m_max[index])}</span>
+                </div>
+                <div class="detail-value">
+                  <span>Минимальная:</span>
+                  <span class="value">${WeatherService.formatTemperature(daily.temperature_2m_min[index])}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="weather-detail-card">
+            <div class="detail-icon">
+              <span class="material-symbols-outlined">air</span>
+            </div>
+            <div class="detail-content">
+              <div class="detail-label">Ветер</div>
+              <div class="detail-value-single">
+                <span class="value">${Math.round(daily.wind_speed_10m_max?.[index] || 0)} км/ч</span>
+              </div>
+            </div>
+          </div>
+
+          ${(daily.precipitation_probability_max?.[index] > 0) || (daily.precipitation_sum?.[index] > 0) ? `
+            <div class="weather-detail-card">
+              <div class="detail-icon">
+                <span class="material-symbols-outlined">umbrella</span>
+              </div>
+              <div class="detail-content">
+                <div class="detail-label">Осадки</div>
+                <div class="detail-values">
+                  ${daily.precipitation_probability_max?.[index] > 0 ? `
+                    <div class="detail-value">
+                      <span>Вероятность:</span>
+                      <span class="value">${daily.precipitation_probability_max[index]}%</span>
+                    </div>
+                  ` : ''}
+                  ${daily.precipitation_sum?.[index] > 0 ? `
+                    <div class="detail-value">
+                      <span>Количество:</span>
+                      <span class="value">${daily.precipitation_sum[index]} мм</span>
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="weather-detail-card">
+            <div class="detail-icon">
+              <span class="material-symbols-outlined">info</span>
+            </div>
+            <div class="detail-content">
+              <div class="detail-label">Тип данных</div>
+              <div class="detail-value-single">
+                <span class="value ${dataType}">
+                  ${this.getDataTypeText(dataType)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  renderWeatherForecast(container, cityName, startDate, endDate, dataType, reliability) {
+    const { daily } = this.weatherData;
+
+    let reliabilityBadge = '';
+    if (reliability === 'medium') {
+      reliabilityBadge = '<div class="reliability-badge medium">Климатические средние</div>';
+    } else if (reliability === 'low') {
+      reliabilityBadge = '<div class="reliability-badge low">Расчетные данные</div>';
+    }
+
+    container.innerHTML = `
+      ${reliabilityBadge}
+      <div class="range-weather-section">
+        <div class="period-info">
+          <h4>${this.getDataTypeText(dataType)}</h4>
+          <div class="period-dates">${WeatherService.formatDateDisplay(startDate)} - ${WeatherService.formatDateDisplay(endDate)}</div>
+        </div>
+        
+        <div class="forecast-grid-extended">
+          ${daily.time.map((date, index) => `
+            <div class="forecast-day-extended ${dataType}">
+              <div class="forecast-date">${WeatherService.formatDateShort(date)}</div>
+              <div class="forecast-icon">
+                <span class="material-symbols-outlined">
+                  ${WeatherService.getWeatherIcon(daily.weather_code[index])}
+                </span>
+              </div>
+              <div class="forecast-main">
+                <div class="forecast-temp-range">
+                  <span class="temp-max">${WeatherService.formatTemperature(daily.temperature_2m_max[index])}</span>
+                  <span class="temp-min">${WeatherService.formatTemperature(daily.temperature_2m_min[index])}</span>
+                </div>
+                <div class="forecast-description">
+                  ${WeatherService.getWeatherDescription(daily.weather_code[index])}
+                </div>
+              </div>
+              <div class="forecast-details">
+                <div class="forecast-detail">
+                  <span class="material-symbols-outlined">air</span>
+                  <span>${Math.round(daily.wind_speed_10m_max?.[index] || 0)} км/ч</span>
+                </div>
+                ${daily.precipitation_probability_max?.[index] > 0 ? `
+                  <div class="forecast-detail">
+                    <span class="material-symbols-outlined">umbrella</span>
+                    <span>${daily.precipitation_probability_max[index]}%</span>
+                  </div>
+                ` : daily.precipitation_sum?.[index] > 0 ? `
+                  <div class="forecast-detail">
+                    <span class="material-symbols-outlined">water_drop</span>
+                    <span>${daily.precipitation_sum[index]} мм</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  getDataTypeText(dataType) {
+    const types = {
+      'forecast': 'Прогноз погоды',
+      'historical': 'Исторические данные',
+      'climate': 'Климатический прогноз',
+      'generated': 'Расчетные данные'
+    };
+    return types[dataType] || 'Данные о погоде';
+  }
+
+  closeWeatherModal() {
+    const modal = document.querySelector('.weather-modal-overlay');
+    if (modal) {
+      document.body.removeChild(modal);
+    }
+  }
   getTourIdFromURL() {
     const path = window.location.pathname;
     const tourMatch = path.match(/\/client\/tour\/(\d+)/);
@@ -122,7 +873,6 @@ class DetailsPage
       this.isLoading = true;
 
       if (!this.currentUser) {
-        console.log('Пользователь не авторизован - избранное недоступно');
         this.updateFavoriteButton(false);
         return;
       }
@@ -628,7 +1378,7 @@ class DetailsPage
     let starsHTML = '';
 
     for (let i = 0; i < fullStars; i++) {
-      starsHTML += '<span class="material-symbols-outlined filled-star">star</span>';
+      starsHTML += '<span class="star hover active">★</span>';
     }
 
     if (hasHalfStar) {
@@ -636,7 +1386,7 @@ class DetailsPage
     }
 
     for (let i = 0; i < emptyStars; i++) {
-      starsHTML += '<span class="material-symbols-outlined empty-star">star</span>';
+      starsHTML += '<span class="star">★</span>';
     }
 
     return starsHTML;
@@ -1175,22 +1925,12 @@ class DetailsPage
     });
 
     confirmBtn.addEventListener('click', async () => {
-      // ВСЕГДА получаем актуальные данные из DOM
       const seatsContainer = modal.querySelector('#seats-container');
       const selectedSeats = seatsContainer ?
         Array.from(seatsContainer.querySelectorAll('.seat.selected'))
           .map(seat => seat.dataset.seat) : [];
 
       const currentTravelers = parseInt(travelersCount.textContent);
-
-      console.log('Проверка перед бронированием:', {
-        selectedSeats,
-        selectedSeatsCount: selectedSeats.length,
-        currentTravelers,
-        currentBaggage,
-        currentBaggageCount
-      });
-
       if (selectedSeats.length !== currentTravelers) {
         this.showNotification(`Необходимо выбрать ${currentTravelers} мест(а)`, 'warning');
         return;
@@ -1271,7 +2011,6 @@ class DetailsPage
         return;
       }
       seatElement.classList.add('selected');
-      console.log('Выбрали место:', seatElement.dataset.seat);
     }
     this.updateSelectedSeatsInfo(modal);
     this.updateFlightBookingSummary(modal);
@@ -1364,18 +2103,18 @@ class DetailsPage
       warning.style.display = canConfirm ? 'none' : 'block';
     }
   }
-  async submitTourBooking(travelersCount, transportationType, departureCity)
-  {
-    try
-    {
-      const basePrice = this.getCurrentPrice();
-      let totalPrice = basePrice * travelersCount;
-      if (!this.currentData?.transportationIncluded && transportationType === 'company')
-      {
-        totalPrice += basePrice * travelersCount * 0.2;
+  async submitTourBooking(travelersCount, transportationType, departureCity) {
+    try {
+      const basePrice = this.currentData.originalPrice || this.currentData.price;
+      const finalPrice = this.currentData.price;
+
+      let totalPrice = finalPrice * travelersCount;
+
+      if (!this.currentData?.transportationIncluded && transportationType === 'company') {
+        totalPrice += finalPrice * travelersCount * 0.2;
       }
-      const bookingData =
-        {
+
+      const bookingData = {
         travelersCount: travelersCount,
         transportationType: transportationType,
         departureCity: transportationType === 'company' ? departureCity : null,
@@ -1383,31 +2122,30 @@ class DetailsPage
         tourId: this.tourId
       };
       const result = await DetailsService.createBooking(bookingData);
-      if (result.success)
-      {
+      if (result.success) {
         this.showNotification('Тур успешно забронирован!', 'success');
         setTimeout(() => {
           window.location.href = '/client/profile';
         }, 2000);
       }
-    } catch (error)
-    {
+    } catch (error) {
       console.error('Ошибка бронирования тура:', error);
       this.showNotification('Ошибка при бронировании тура', 'error');
     }
   }
-  async submitFlightBooking(travelersCount, selectedSeats, hasBaggage, baggageCount)
-  {
+  async submitFlightBooking(travelersCount, selectedSeats, hasBaggage, baggageCount) {
     try {
-      const basePrice = this.getCurrentPrice();
-      let totalPrice = basePrice * travelersCount;
-      if (hasBaggage)
-      {
+      const basePrice = this.currentData.originalPrice || this.currentData.price;
+      const finalPrice = this.currentData.price;
+
+      let totalPrice = finalPrice * travelersCount;
+
+      if (hasBaggage) {
         const baggagePrice = this.currentData?.baggagePrice || 50;
         totalPrice += baggagePrice * baggageCount;
       }
-      const bookingData =
-        {
+
+      const bookingData = {
         travelersCount: travelersCount,
         selectedSeats: selectedSeats,
         hasBaggage: hasBaggage,
@@ -1416,33 +2154,43 @@ class DetailsPage
         flightId: this.flightId
       };
       const result = await DetailsService.createBooking(bookingData);
-      if (result.success)
-      {
+      if (result.success) {
         this.showNotification('Авиабилет успешно забронирован!', 'success');
-        setTimeout(() =>
-        {
+        setTimeout(() => {
           window.location.href = '/client/profile';
         }, 2000);
       }
-    } catch (error)
-    {
+    } catch (error) {
       console.error('Ошибка бронирования авиабилета:', error);
       this.showNotification('Ошибка при бронировании авиабилета', 'error');
     }
   }
   getCurrentPrice() {
-    const priceElement = document.querySelector('.price-amount');
-    if (priceElement) {
-      const priceText = priceElement.textContent;
-      let normalizedPrice = priceText.replace(/[^\d,.]/g, '');
-      if (normalizedPrice.includes(',') && normalizedPrice.includes('.')) {
-        normalizedPrice = normalizedPrice.replace(/,/g, '');
-      } else {
-        // Иначе заменяем запятую на точку
-        normalizedPrice = normalizedPrice.replace(',', '.');
-      }
+    const priceContainer = document.querySelector('.price-container');
 
-      return parseFloat(normalizedPrice) || 0;
+    if (priceContainer) {
+      const finalPriceElement = priceContainer.querySelector('.final-price');
+      if (finalPriceElement) {
+        const priceText = finalPriceElement.textContent;
+        let normalizedPrice = priceText.replace(/[^\d,.]/g, '');
+        if (normalizedPrice.includes(',') && normalizedPrice.includes('.')) {
+          normalizedPrice = normalizedPrice.replace(/,/g, '');
+        } else {
+          normalizedPrice = normalizedPrice.replace(',', '.');
+        }
+        return parseFloat(normalizedPrice) || 0;
+      }
+      const priceElement = document.querySelector('.price-amount');
+      if (priceElement) {
+        const priceText = priceElement.textContent;
+        let normalizedPrice = priceText.replace(/[^\d,.]/g, '');
+        if (normalizedPrice.includes(',') && normalizedPrice.includes('.')) {
+          normalizedPrice = normalizedPrice.replace(/,/g, '');
+        } else {
+          normalizedPrice = normalizedPrice.replace(',', '.');
+        }
+        return parseFloat(normalizedPrice) || 0;
+      }
     }
     return this.currentData?.price || 0;
   }

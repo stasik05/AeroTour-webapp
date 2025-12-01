@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>AeroTour - Просмотр пользователей</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <link rel="stylesheet" href="/shared/css/styles.css">
+  <style>
+      .container {
+          max-width: 1200px;
+      }
+
+      .users-table {
+          width: 100%;
+          background: rgba(15, 23, 42, 0.8);
+          backdrop-filter: blur(20px);
+          border-radius: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          overflow: hidden;
+          margin: 2rem 0;
+      }
+
+      .users-table-header {
+          padding: 1.5rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .users-table-title {
+          color: white;
+          font-family: 'Playfair Display', serif;
+          margin: 0;
+          font-size: 1.5rem;
+      }
+
+      .table {
+          width: 100%;
+          border-collapse: collapse;
+      }
+
+      .table th {
+          background: rgba(30, 41, 59, 0.8);
+          color: #e2e8f0;
+          padding: 1rem;
+          text-align: left;
+          font-weight: 500;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .table td {
+          padding: 1rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          color: white;
+      }
+
+      .table tr:hover {
+          background: rgba(255, 255, 255, 0.05);
+      }
+
+      .btn {
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+      }
+
+      .btn-secondary {
+          background: #6b7280;
+          color: white;
+      }
+
+      .btn-secondary:hover {
+          background: #4b5563;
+      }
+
+      .loading {
+          text-align: center;
+          padding: 2rem;
+          color: white;
+      }
+
+      .role-badge {
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.25rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+      }
+
+      .role-admin {
+          background: rgba(239, 68, 68, 0.2);
+          color: #fca5a5;
+      }
+
+      .role-manager {
+          background: rgba(59, 130, 246, 0.2);
+          color: #93c5fd;
+      }
+
+      .role-client {
+          background: rgba(16, 185, 129, 0.2);
+          color: #6ee7b7;
+      }
+
+      .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1rem;
+          margin-bottom: 2rem;
+      }
+
+      .stat-card {
+          background: rgba(15, 23, 42, 0.8);
+          backdrop-filter: blur(20px);
+          border-radius: 0.5rem;
+          padding: 1.5rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .stat-value {
+          font-size: 2rem;
+          font-weight: bold;
+          color: white;
+          margin: 0;
+      }
+
+      .stat-label {
+          color: #94a3b8;
+          margin: 0.5rem 0 0 0;
+          font-size: 0.875rem;
+      }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <h1 class="logo-text">AeroTour</h1>
+        </div>
+        <nav class="navigation">
+          <a class="nav-link" href="/admin/main-menu">
+            <span class="material-symbols-outlined">home</span>
+            <span class="nav-link-text">Главное меню</span>
+          </a>
+          <a class="nav-link active" href="/admin/main-menu/users/view">
+            <span class="material-symbols-outlined">visibility</span>
+            <span class="nav-link-text">Просмотреть пользователей</span>
+          </a>
+          <a class="nav-link" href="/admin/main-menu/profile">
+            <span class="material-symbols-outlined">person</span>
+            <span class="nav-link-text">Личный кабинет</span>
+          </a>
+        </nav>
+        <div class="user-actions">
+          <button class="notification-button">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <img alt="User avatar" class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="main-content">
+    <div class="background-animation">
+      <div class="background-overlay"></div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+    <div class="content-overlay">
+      <div class="container">
+        <div class="stats-grid" id="statsContainer">
+          <!-- Статистика будет загружена через JavaScript -->
+        </div>
+
+        <div class="users-table">
+          <div class="users-table-header">
+            <h2 class="users-table-title">Все пользователи</h2>
+          </div>
+
+          <div id="loadingMessage" class="loading">
+            <span class="material-symbols-outlined">refresh</span>
+            Загрузка данных...
+          </div>
+
+          <div id="usersTableContainer" style="display: none;">
+            <table class="table">
+              <thead>
+              <tr>
+                <th>Имя</th>
+                <th>Фамилия</th>
+                <th>Email</th>
+                <th>Телефон</th>
+                <th>Роль</th>
+                <th>Дата создания</th>
+              </tr>
+              </thead>
+              <tbody id="usersTableBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a href="/admin/main-menu/users" class="btn btn-secondary">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Назад к управлению
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/admin/js/ViewUser.js"></script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>AeroTour - Редактирование персонализированного предложения</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <link rel="stylesheet" href="/shared/css/styles.css">
+  <style>
+      .form-container {
+          max-width: 800px;
+          margin: 2rem auto;
+          padding: 2rem;
+          background: rgba(15, 23, 42, 0.8);
+          backdrop-filter: blur(20px);
+          border-radius: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: white;
+      }
+
+      .form-title {
+          font-family: 'Playfair Display', serif;
+          color: white;
+          text-align: center;
+          margin-bottom: 2rem;
+          font-size: 2rem;
+      }
+
+      .form-group {
+          margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+          display: block;
+          color: #e2e8f0;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+      }
+
+      .form-input, .form-textarea, .form-select {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 0.5rem;
+          background: rgba(15, 23, 42, 0.6);
+          color: white;
+          font-size: 1rem;
+      }
+
+      .form-input:focus, .form-textarea:focus, .form-select:focus {
+          outline: none;
+          border-color: #f59e0b;
+          box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+      }
+
+      .form-textarea {
+          min-height: 100px;
+          resize: vertical;
+      }
+
+      .radio-group {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+      }
+
+      .radio-label {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          cursor: pointer;
+          padding: 0.75rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 0.5rem;
+          transition: all 0.3s;
+      }
+
+      .radio-label:hover {
+          border-color: #f59e0b;
+          background: rgba(245, 158, 11, 0.1);
+      }
+
+      .radio-label input[type="radio"] {
+          display: none;
+      }
+
+      .radio-custom {
+          width: 20px;
+          height: 20px;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          position: relative;
+          transition: all 0.3s;
+      }
+
+      .radio-label input[type="radio"]:checked + .radio-custom {
+          border-color: #f59e0b;
+          background: #f59e0b;
+      }
+
+      .radio-label input[type="radio"]:checked + .radio-custom::after {
+          content: '';
+          width: 8px;
+          height: 8px;
+          background: white;
+          border-radius: 50%;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+      }
+
+      .form-actions {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+          margin-top: 2rem;
+      }
+
+      .btn {
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+      }
+
+      .btn-primary {
+          background: #4f46e5;
+          color: white;
+      }
+
+      .btn-primary:hover {
+          background: #4338ca;
+      }
+
+      .btn-secondary {
+          background: #6b7280;
+          color: white;
+      }
+
+      .btn-secondary:hover {
+          background: #4b5563;
+      }
+
+      .discount-preview {
+          background: rgba(79, 70, 229, 0.1);
+          border: 1px solid rgba(79, 70, 229, 0.3);
+          border-radius: 0.5rem;
+          padding: 1rem;
+          margin-top: 1rem;
+      }
+
+      .discount-preview h4 {
+          margin: 0 0 0.5rem 0;
+          color: #e2e8f0;
+      }
+
+      .discount-amount {
+          font-size: 1.5rem;
+          font-weight: bold;
+          color: #10b981;
+      }
+
+      .product-selection {
+          background: rgba(30, 41, 59, 0.6);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 0.5rem;
+          padding: 1rem;
+          margin-top: 0.5rem;
+      }
+
+      .user-info {
+          background: rgba(30, 41, 59, 0.6);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 0.5rem;
+          padding: 1.5rem;
+          margin-bottom: 1.5rem;
+      }
+
+      .user-details {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+      }
+
+      .user-ava {
+          width: 80px;
+          height: 80px;
+          object-fit: cover;
+          border-radius: var(--border-radius-full);
+          border: 2px solid var(--accent-color);
+      }
+
+      .user-text {
+          flex: 1;
+      }
+
+      .user-name {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: white;
+          margin-bottom: 0.5rem;
+      }
+
+      .user-email {
+          color: #94a3b8;
+          font-size: 1rem;
+      }
+
+      .status-badge {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          border-radius: 1rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          margin-left: 1rem;
+      }
+
+      .status-active {
+          background: #10b981;
+          color: white;
+      }
+
+      .status-expired {
+          background: #ef4444;
+          color: white;
+      }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <h1 class="logo-text">AeroTour</h1>
+        </div>
+        <nav class="navigation">
+          <a class="nav-link" href="/manager/main-menu">
+            <span class="material-symbols-outlined">home</span>
+            <span class="nav-link-text">Главное меню</span>
+          </a>
+          <a class="nav-link" href="/manager/main-menu/manager-support">
+            <span class="material-symbols-outlined">support_agent</span>
+            <span class="nav-link-text">Поддержка</span>
+          </a>
+          <a class="nav-link active" href="/manager/main-menu/discount/personalized-offers/edit">
+            <span class="material-symbols-outlined">edit</span>
+            <span class="nav-link-text">Редактирование</span>
+          </a>
+          <a class="nav-link" href="/manager/main-menu/profile">
+            <span class="material-symbols-outlined">person</span>
+            <span class="nav-link-text">Личный кабинет</span>
+          </a>
+        </nav>
+        <div class="user-actions">
+          <button class="notification-button">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <img alt="User avatar" class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="main-content">
+    <div class="background-animation">
+      <div class="background-overlay"></div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+    <div class="content-overlay">
+      <div class="container">
+        <div class="form-container">
+          <h2 class="form-title">
+            Редактирование персонализированного предложения
+            <span class="status-badge" id="statusBadge">Загрузка...</span>
+          </h2>
+
+          <div class="user-info" id="userInfo">
+          </div>
+
+          <form id="editPersonalizedOfferForm">
+            <input type="hidden" id="offerId" name="id">
+
+            <div class="form-group">
+              <label class="form-label" for="discount_percent">Процент скидки *</label>
+              <input class="form-input" type="number" id="discount_percent" name="discount_percent" min="1" max="100" step="0.1" required>
+              <div class="discount-preview">
+                <h4>Предпросмотр:</h4>
+                <div>При цене 1000€: <span class="discount-amount" id="discountPreview">900€</span> (экономия 100€)</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="valid_until">Действует до *</label>
+              <input class="form-input" type="date" id="valid_until" name="valid_until" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="description">Описание предложения</label>
+              <textarea class="form-textarea" id="description" name="description" rows="4" placeholder="Описание специального предложения для клиента..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Тип предложения</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="offer_type" value="general" onchange="toggleOfferType()">
+                  <span class="radio-custom"></span>
+                  <div>
+                    <strong>Общее предложение</strong>
+                    <div style="font-size: 0.875rem; color: #94a3b8; margin-top: 0.25rem;">
+                      Предложение применяется ко всем турам и перелетам
+                    </div>
+                  </div>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="offer_type" value="tour" onchange="toggleOfferType()">
+                  <span class="radio-custom"></span>
+                  <div>
+                    <strong>Предложение на конкретный тур</strong>
+                    <div style="font-size: 0.875rem; color: #94a3b8; margin-top: 0.25rem;">
+                      Предложение применяется только к выбранному туру
+                    </div>
+                  </div>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="offer_type" value="flight" onchange="toggleOfferType()">
+                  <span class="radio-custom"></span>
+                  <div>
+                    <strong>Предложение на конкретный перелет</strong>
+                    <div style="font-size: 0.875rem; color: #94a3b8; margin-top: 0.25rem;">
+                      Предложение применяется только к выбранному перелету
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="form-group" id="tourSelection" style="display: none;">
+              <label class="form-label" for="tour_id">Выберите тур</label>
+              <div class="product-selection">
+                <select class="form-select" id="tour_id" name="tour_id">
+                  <option value="">-- Загрузка туров... --</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" id="flightSelection" style="display: none;">
+              <label class="form-label" for="flight_id">Выберите авиаперелет</label>
+              <div class="product-selection">
+                <select class="form-select" id="flight_id" name="flight_id">
+                  <option value="">-- Загрузка перелетов... --</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <a href="/manager/main-menu/discount/personalized-offers" class="btn btn-secondary">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Назад
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <span class="material-symbols-outlined">save</span>
+                Обновить предложение
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/manager/js/EditPersonalizedOffers.js"></script>
+</body>
+</html>

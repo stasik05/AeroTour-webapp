@@ -53,10 +53,6 @@ class Booking
     {
         return this.#bookingDate;
     }
-    get bookingStatus()
-    {
-        return this.#bookingStatus;
-    }
     addHistory(historyRecord) 
     {
         if (!(historyRecord instanceof BookingHistory))

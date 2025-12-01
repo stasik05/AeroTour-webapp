@@ -8,10 +8,58 @@ class DetailsController {
 
       const [tourRows] = await pool.execute(
         `
-            SELECT t.*
+            SELECT
+                t.*,
+                d.discount_percent,
+                d.is_active as discount_active,
+                d.start_date as discount_start_date,
+                d.end_date as discount_end_date,
+                po.discount_percent as personal_discount_percent,
+                po.valid_until as personal_discount_valid_until,
+                po.description as personal_offer_description,
+                CASE
+                    WHEN po.discount_percent IS NOT NULL AND po.valid_until >= CURDATE()
+                        THEN ROUND(t.price * (1 - po.discount_percent / 100), 2)
+                    WHEN d.discount_percent IS NOT NULL AND d.is_active = TRUE
+                        AND (d.start_date IS NULL OR d.start_date <= CURDATE())
+                        AND (d.end_date IS NULL OR d.end_date >= CURDATE())
+                        THEN ROUND(t.price * (1 - d.discount_percent / 100), 2)
+                    ELSE t.price
+                    END as final_price,
+                CASE
+                    WHEN po.discount_percent IS NOT NULL AND po.valid_until >= CURDATE()
+                        THEN t.price
+                    WHEN d.discount_percent IS NOT NULL AND d.is_active = TRUE
+                        AND (d.start_date IS NULL OR d.start_date <= CURDATE())
+                        AND (d.end_date IS NULL OR d.end_date >= CURDATE())
+                        THEN t.price
+                    ELSE NULL
+                    END as original_price,
+                CASE
+                    WHEN po.discount_percent IS NOT NULL AND po.valid_until >= CURDATE()
+                        THEN 'personal'
+                    WHEN d.discount_percent IS NOT NULL AND d.is_active = TRUE
+                        AND (d.start_date IS NULL OR d.start_date <= CURDATE())
+                        AND (d.end_date IS NULL OR d.end_date >= CURDATE())
+                        THEN 'general'
+                    ELSE NULL
+                    END as discount_type,
+                COALESCE(po.discount_percent, d.discount_percent) as applied_discount_percent
             FROM tours t
+                     LEFT JOIN discounts d ON (
+                d.tour_id = t.id
+                    AND d.is_active = TRUE
+                    AND (d.start_date IS NULL OR d.start_date <= CURDATE())
+                    AND (d.end_date IS NULL OR d.end_date >= CURDATE())
+                )
+                     LEFT JOIN personalized_offers po ON (
+                (po.tour_id = t.id OR (po.tour_id IS NULL AND po.flight_id IS NULL))
+                    AND po.valid_until >= CURDATE()
+                ${userId ? 'AND po.user_id = ?' : ''}
+                )
             WHERE t.id = ? AND t.available = TRUE
-        `, [id]
+        `,
+        userId ? [userId, id] : [id]
       );
 
       if (tourRows.length === 0) {
@@ -23,42 +71,43 @@ class DetailsController {
 
       const tour = tourRows[0];
 
+
       const [imageRows] = await pool.execute(
         `
-            SELECT ti.*
-            FROM tour_images ti
-            WHERE ti.tour_id = ?
-            ORDER BY ti.sort_order ASC
+          SELECT ti.*
+          FROM tour_images ti
+          WHERE ti.tour_id = ?
+          ORDER BY ti.sort_order ASC
         `, [id]
       );
 
       const [reviewRows] = await pool.execute(
         `SELECT
-             r.*,
-             u.id as user_id,
-             u.name as user_name,
-             u.last_name as user_last_name,
-             u.photo as user_photo
+           r.*,
+           u.id as user_id,
+           u.name as user_name,
+           u.last_name as user_last_name,
+           u.photo as user_photo
          FROM reviews r
-                  LEFT JOIN users u ON r.user_id = u.id
+         LEFT JOIN users u ON r.user_id = u.id
          WHERE r.tour_id = ?
          ORDER BY r.created_at DESC
-             LIMIT 10
+         LIMIT 10
         `, [id]
       );
 
       const [ratingStats] = await pool.execute(
         `
-            SELECT
-                AVG(r.rating) as average_rating,
-                COUNT(r.id) as reviews_count,
-                COUNT(CASE WHEN r.rating = 5 THEN 1 END) as rating_5,
-                COUNT(CASE WHEN r.rating = 4 THEN 1 END) as rating_4,
-                COUNT(CASE WHEN r.rating = 3 THEN 1 END) as rating_3,
-                COUNT(CASE WHEN r.rating = 2 THEN 1 END) as rating_2,
-                COUNT(CASE WHEN r.rating = 1 THEN 1 END) as rating_1
-            FROM reviews r
-            WHERE r.tour_id = ?
+          SELECT
+            AVG(r.rating) as average_rating,
+            COUNT(r.id) as reviews_count,
+            COUNT(CASE WHEN r.rating = 5 THEN 1 END) as rating_5,
+            COUNT(CASE WHEN r.rating = 4 THEN 1 END) as rating_4,
+            COUNT(CASE WHEN r.rating = 3 THEN 1 END) as rating_3,
+            COUNT(CASE WHEN r.rating = 2 THEN 1 END) as rating_2,
+            COUNT(CASE WHEN r.rating = 1 THEN 1 END) as rating_1
+          FROM reviews r
+          WHERE r.tour_id = ?
         `, [id]
       );
 
@@ -68,8 +117,8 @@ class DetailsController {
       if (userId) {
         const [favoritesRows] = await pool.execute(
           `
-              SELECT id FROM favorites
-              WHERE user_id = ? AND tour_id = ?
+            SELECT id FROM favorites
+            WHERE user_id = ? AND tour_id = ?
           `, [userId, id]
         );
         isFavorite = favoritesRows.length > 0;
@@ -101,8 +150,6 @@ class DetailsController {
         2: stats.rating_2 || 0,
         1: stats.rating_1 || 0
       };
-
-      // Парсим доступные города для трансфера
       let availableCities = ['Москва', 'Санкт-Петербург', 'Новосибирск', 'Екатеринбург'];
       try {
         if (tour.available_cities) {
@@ -111,7 +158,9 @@ class DetailsController {
       } catch (e) {
         console.error('Ошибка парсинга available_cities:', e);
       }
-
+      const hasDiscount = tour.original_price !== null;
+      const isPersonalDiscount = tour.discount_type === 'personal';
+      const discountPercent = isPersonalDiscount ? tour.personal_discount_percent : tour.discount_percent;
       const formattedTour = {
         id: tour.id,
         title: tour.title,
@@ -120,7 +169,14 @@ class DetailsController {
         city: tour.city,
         startDate: tour.start_date,
         endDate: tour.end_date,
-        price: tour.price,
+        price: tour.final_price,
+        originalPrice: tour.original_price,
+        discountPercent: tour.discount_percent,
+        hasDiscount: tour.discount_percent !== null && tour.original_price !== null,
+        isPersonalOffer: isPersonalDiscount,
+        personalDiscountValidUntil: tour.personal_discount_valid_until,
+        personalOfferDescription: tour.personal_offer_description,
+        appliedDiscountPercent: tour.applied_discount_percent,
         transportationIncluded: tour.transportation_included || false,
         availableCities: availableCities,
         duration: Math.ceil((new Date(tour.end_date) - new Date(tour.start_date)) / (1000 * 60 * 60 * 24)),
@@ -156,6 +212,7 @@ class DetailsController {
     }
   }
 
+
   async getFlightDetails(req, res) {
     try {
       const { id } = req.params;
@@ -163,10 +220,58 @@ class DetailsController {
 
       const [flightRows] = await pool.execute(
         `
-            SELECT f.*
+            SELECT
+                f.*,
+                d.discount_percent,
+                d.is_active as discount_active,
+                d.start_date as discount_start_date,
+                d.end_date as discount_end_date,
+                po.discount_percent as personal_discount_percent,
+                po.valid_until as personal_discount_valid_until,
+                po.description as personal_offer_description,
+                CASE
+                    WHEN po.discount_percent IS NOT NULL AND po.valid_until >= CURDATE()
+                        THEN ROUND(f.price * (1 - po.discount_percent / 100), 2)
+                    WHEN d.discount_percent IS NOT NULL AND d.is_active = TRUE
+                        AND (d.start_date IS NULL OR d.start_date <= CURDATE())
+                        AND (d.end_date IS NULL OR d.end_date >= CURDATE())
+                        THEN ROUND(f.price * (1 - d.discount_percent / 100), 2)
+                    ELSE f.price
+                    END as final_price,
+                CASE
+                    WHEN po.discount_percent IS NOT NULL AND po.valid_until >= CURDATE()
+                        THEN f.price
+                    WHEN d.discount_percent IS NOT NULL AND d.is_active = TRUE
+                        AND (d.start_date IS NULL OR d.start_date <= CURDATE())
+                        AND (d.end_date IS NULL OR d.end_date >= CURDATE())
+                        THEN f.price
+                    ELSE NULL
+                    END as original_price,
+                CASE
+                    WHEN po.discount_percent IS NOT NULL AND po.valid_until >= CURDATE()
+                        THEN 'personal'
+                    WHEN d.discount_percent IS NOT NULL AND d.is_active = TRUE
+                        AND (d.start_date IS NULL OR d.start_date <= CURDATE())
+                        AND (d.end_date IS NULL OR d.end_date >= CURDATE())
+                        THEN 'general'
+                    ELSE NULL
+                    END as discount_type,
+                COALESCE(po.discount_percent, d.discount_percent) as applied_discount_percent
             FROM flights f
+                     LEFT JOIN discounts d ON (
+                (d.flight_id = f.id OR d.airline = f.airline)
+                    AND d.is_active = TRUE
+                    AND (d.start_date IS NULL OR d.start_date <= CURDATE())
+                    AND (d.end_date IS NULL OR d.end_date >= CURDATE())
+                )
+                     LEFT JOIN personalized_offers po ON (
+                (po.flight_id = f.id OR (po.tour_id IS NULL AND po.flight_id IS NULL))
+                    AND po.valid_until >= CURDATE()
+                ${userId ? 'AND po.user_id = ?' : ''}
+                )
             WHERE f.id = ? AND f.available = TRUE
-        `, [id]
+        `,
+        userId ? [userId, id] : [id]
       );
 
       if (flightRows.length === 0) {
@@ -175,52 +280,49 @@ class DetailsController {
           message: 'Рейс не найден'
         });
       }
-
       const flight = flightRows[0];
-
-      // Получаем занятые места
       const [occupiedSeats] = await pool.execute(
-        `SELECT seat_number FROM flight_seats 
+        `SELECT seat_number FROM flight_seats
          WHERE flight_id = ? AND is_occupied = TRUE`,
         [id]
       );
 
       const [imageRows] = await pool.execute(
         `
-          SELECT fi.*
-          FROM flight_images fi
-          WHERE fi.flight_id = ?
+            SELECT fi.*
+            FROM flight_images fi
+            WHERE fi.flight_id = ?
         `, [id]
       );
 
       const [reviewRows] = await pool.execute(
         `
-          SELECT 
-          r.*,
-          u.id as user_id,
-          u.name as user_name,
-          u.last_name as user_last_name,
-          u.photo as user_photo
-          FROM reviews r 
-          LEFT JOIN users u ON r.user_id = u.id
-          WHERE r.flight_id = ?
-          ORDER BY r.created_at DESC
-          LIMIT 10
+            SELECT
+                r.*,
+                u.id as user_id,
+                u.name as user_name,
+                u.last_name as user_last_name,
+                u.photo as user_photo
+            FROM reviews r
+                     LEFT JOIN users u ON r.user_id = u.id
+            WHERE r.flight_id = ?
+            ORDER BY r.created_at DESC
+                LIMIT 10
         `, [id]
       );
 
       const [ratingStats] = await pool.execute(
         `
-          SELECT 
-          AVG(r.rating) as average_rating,
-          COUNT(r.id) as reviews_count,
-          COUNT(CASE WHEN r.rating = 5 THEN 1 END) as rating_5,
-          COUNT(CASE WHEN r.rating = 4 THEN 1 END) as rating_4,
-          COUNT(CASE WHEN r.rating = 3 THEN 1 END) as rating_3,
-          COUNT(CASE WHEN r.rating = 2 THEN 1 END) as rating_2,
-          COUNT(CASE WHEN r.rating = 1 THEN 1 END) as rating_1
-          FROM reviews r
-          WHERE r.flight_id = ?
+            SELECT
+                AVG(r.rating) as average_rating,
+                COUNT(r.id) as reviews_count,
+                COUNT(CASE WHEN r.rating = 5 THEN 1 END) as rating_5,
+                COUNT(CASE WHEN r.rating = 4 THEN 1 END) as rating_4,
+                COUNT(CASE WHEN r.rating = 3 THEN 1 END) as rating_3,
+                COUNT(CASE WHEN r.rating = 2 THEN 1 END) as rating_2,
+                COUNT(CASE WHEN r.rating = 1 THEN 1 END) as rating_1
+            FROM reviews r
+            WHERE r.flight_id = ?
         `, [id]
       );
 
@@ -230,8 +332,8 @@ class DetailsController {
       if (userId) {
         const [favoriteRows] = await pool.execute(
           `
-            SELECT id FROM favorites 
-            WHERE user_id = ? AND flight_id = ?
+              SELECT id FROM favorites
+              WHERE user_id = ? AND flight_id = ?
           `, [userId, id]
         );
         isFavorite = favoriteRows.length > 0;
@@ -262,7 +364,9 @@ class DetailsController {
         2: stats.rating_2 || 0,
         1: stats.rating_1 || 0
       };
-
+      const hasDiscount = flight.original_price !== null;
+      const isPersonalDiscount = flight.discount_type === 'personal';
+      const discountPercent = isPersonalDiscount ? flight.personal_discount_percent : flight.discount_percent;
       const formattedFlight = {
         id: flight.id,
         airline: flight.airline,
@@ -271,7 +375,14 @@ class DetailsController {
         arrivalCity: flight.arrival_city,
         departureTime: flight.departure_time,
         arrivalTime: flight.arrival_time,
-        price: flight.price,
+        price: flight.final_price,
+        originalPrice: flight.original_price,
+        discountPercent: flight.discount_percent,
+        hasDiscount: flight.discount_percent !== null && flight.original_price !== null,
+        isPersonalOffer: isPersonalDiscount,
+        personalDiscountValidUntil: flight.personal_discount_valid_until,
+        personalOfferDescription: flight.personal_offer_description,
+        appliedDiscountPercent: flight.applied_discount_percent,
         baggagePrice: flight.baggage_price || 50,
         aircraftType: flight.aircraft_type || 'Boeing 737',
         totalSeats: flight.total_seats || 180,
@@ -411,7 +522,8 @@ class DetailsController {
         selectedSeats = [],
         hasBaggage = false,
         baggageCount = 0,
-        totalPrice
+        totalPrice,
+        basePrice
       } = req.body;
 
       const userId = req.user.userId;
@@ -429,17 +541,13 @@ class DetailsController {
           message: 'Не указан тур или авиабилет'
         });
       }
-
-      // Валидация данных
       if (travelersCount < 1 || travelersCount > 10) {
         return res.status(400).json({
           success: false,
           message: 'Количество путешественников должно быть от 1 до 10'
         });
       }
-
       if (flightId) {
-        // Для авиабилетов проверяем выбранные места
         if (!selectedSeats || selectedSeats.length !== travelersCount) {
           return res.status(400).json({
             success: false,
@@ -450,7 +558,7 @@ class DetailsController {
         const placeholders = selectedSeats.map(() => '?').join(',');
         const [occupiedSeats] = await pool.execute(
           `SELECT seat_number FROM flight_seats
-           WHERE flight_id = ? AND seat_number IN (${placeholders}) AND is_occupied = TRUE`,
+         WHERE flight_id = ? AND seat_number IN (${placeholders}) AND is_occupied = TRUE`,
           [flightId, ...selectedSeats]
         );
 
@@ -468,6 +576,7 @@ class DetailsController {
           message: 'Для трансфера от компании необходимо указать город вылета'
         });
       }
+      let currentPrice = null;
       if (tourId) {
         const [tourRows] = await pool.execute(
           `SELECT available, price FROM tours WHERE id = ?`,
@@ -479,6 +588,7 @@ class DetailsController {
             message: 'Тур недоступен для бронирования'
           });
         }
+        currentPrice = tourRows[0].price;
       }
 
       if (flightId) {
@@ -492,35 +602,42 @@ class DetailsController {
             message: 'Рейс недоступен для бронирования'
           });
         }
+        currentPrice = flightRows[0].price;
+      }
+      if (basePrice && currentPrice && basePrice !== currentPrice) {
+        return res.status(400).json({
+          success: false,
+          message: 'Цена изменилась. Пожалуйста, обновите страницу и попробуйте снова.'
+        });
       }
 
-      // Нормализация параметров - замена undefined на null
-      const normalizedTourId = tourId || null;
-      const normalizedFlightId = flightId || null;
-      const normalizedDepartureCity = departureCity || null;
-      const normalizedSelectedSeats = selectedSeats && selectedSeats.length > 0 ? JSON.stringify(selectedSeats) : null;
-      const normalizedBaggageCount = hasBaggage ? baggageCount : 0;
       if (typeof totalPrice === 'undefined' || totalPrice === null) {
         return res.status(400).json({
           success: false,
           message: 'Не указана общая стоимость бронирования'
         });
       }
+      const normalizedTourId = tourId || null;
+      const normalizedFlightId = flightId || null;
+      const normalizedDepartureCity = departureCity || null;
+      const normalizedSelectedSeats = selectedSeats && selectedSeats.length > 0 ? JSON.stringify(selectedSeats) : null;
+      const normalizedBaggageCount = hasBaggage ? baggageCount : 0;
+
       const insertQuery = `
-        INSERT INTO bookings (
-          user_id, 
-          tour_id, 
-          flight_id, 
-          travelers_count, 
-          transportation_type, 
-          departure_city, 
-          selected_seats,
-          has_baggage,
-          baggage_count,
-          total_price, 
-          status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Активно')
-      `;
+      INSERT INTO bookings (
+        user_id, 
+        tour_id, 
+        flight_id, 
+        travelers_count, 
+        transportation_type, 
+        departure_city, 
+        selected_seats,
+        has_baggage,
+        baggage_count,
+        total_price, 
+        status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Активно')
+    `;
 
       const [result] = await pool.execute(insertQuery, [
         userId,
@@ -534,23 +651,21 @@ class DetailsController {
         normalizedBaggageCount,
         totalPrice
       ]);
-
-      // Занимаем места для авиабилетов
       if (flightId && selectedSeats.length > 0) {
         for (const seat of selectedSeats) {
           await pool.execute(
             `INSERT INTO flight_seats (flight_id, seat_number, is_occupied)
-             VALUES (?, ?, TRUE)
-                 ON DUPLICATE KEY UPDATE is_occupied = TRUE`,
+           VALUES (?, ?, TRUE)
+               ON DUPLICATE KEY UPDATE is_occupied = TRUE`,
             [flightId, seat]
           );
         }
       }
 
       await pool.execute(`
-          INSERT INTO booking_history (booking_id, status)
-          VALUES (?, 'Активно')
-      `, [result.insertId]);
+        INSERT INTO booking_history (booking_id, status)
+        VALUES (?, 'Активно')
+    `, [result.insertId]);
 
       res.json({
         success: true,
@@ -577,9 +692,6 @@ class DetailsController {
           message: 'Необходима авторизация'
         });
       }
-
-      console.log('Получение избранного для пользователя:', userId);
-
       const [favoriteRows] = await pool.execute(`
       SELECT 
         fav.*,
@@ -679,8 +791,6 @@ class DetailsController {
           message: 'Рейтинг должен быть от 1 до 5'
         });
       }
-
-      // Проверяем, что указан только один ID (тур ИЛИ рейс)
       if (tourId && flightId) {
         return res.status(400).json({
           success: false,
@@ -694,8 +804,6 @@ class DetailsController {
           message: 'Не указан тур или рейс'
         });
       }
-
-      // Проверяем, не оставлял ли пользователь уже отзыв
       let existingReviewQuery = '';
       const existingParams = [userId];
 
@@ -721,12 +829,8 @@ class DetailsController {
           message: 'Вы уже оставляли отзыв для этого тура/рейса'
         });
       }
-
-      // Преобразуем undefined в null для SQL
       const sqlTourId = tourId || null;
       const sqlFlightId = flightId || null;
-
-      // Добавляем новый отзыв
       const insertQuery = `
           INSERT INTO reviews (user_id, tour_id, flight_id, rating, comment)
           VALUES (?, ?, ?, ?, ?)

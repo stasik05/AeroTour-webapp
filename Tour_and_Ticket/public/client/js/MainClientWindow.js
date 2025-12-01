@@ -24,10 +24,8 @@ class SearchUI
   async checkAuth()
   {
     const token = localStorage.getItem('token');
-    console.log('🔐 Токен в checkAuth:', token ? 'Есть' : 'Нет');
     if (!token)
     {
-      console.log('❌ No token found');
       return;
     }
     try
@@ -40,11 +38,11 @@ class SearchUI
       }
       else
       {
-        console.log('⚠️ User data not found in localStorage');
+        console.error('User data not found in localStorage');
       }
     } catch (error)
     {
-      console.log('Auth check failed, but continuing:', error.message);
+      console.error('Auth check failed, but continuing:', error.message);
     }
   }
   updateUserInfo()
@@ -273,7 +271,6 @@ class SearchUI
       this.showNoResults('Ничего не найдено');
       return;
     }
-
     this.elements.resultsTitle.textContent = `Найдено ${results.length} ${this.getResultWord(results.length, type)}`;
     this.elements.searchCount.textContent = this.getSearchDescription(type);
     if (type === 'tours') {
@@ -285,9 +282,14 @@ class SearchUI
   }
   renderTours(tours) {
     this.elements.resultsGrid.innerHTML = tours.map(tour => `
-    <div class="destination-card">
+    <div class="destination-card ${tour.hasDiscount ? 'has-discount' : ''} ${tour.isPersonalOffer ? 'personal-offer' : ''}">
       <div class="card-image-container">
         <img src="${tour.imageUrl}" alt="${tour.title}" class="destination-image">
+        ${tour.hasDiscount ? `
+          <div class="discount-badge ${tour.isPersonalOffer ? 'personal-badge' : ''}">
+            ${tour.isPersonalOffer ? '👑 ' : ''}-${tour.discountPercent}%
+          </div>
+        ` : ''}
         <button class="favorite-btn" data-tour-id="${tour.id}">
           <span class="material-symbols-outlined">favorite</span>
         </button>
@@ -295,16 +297,28 @@ class SearchUI
       <div class="card-content">
         <h3 class="destination-title">${tour.title}</h3>
         <div class="destination-price-container">
-          ${tour.originalPrice ? `<span class="destination-price-old">${tour.originalPrice} ₽</span>` : ''}
-          <span class="destination-price">${tour.price} €</span>
+          ${tour.hasDiscount ? `
+            <div class="price-with-discount">
+              <span class="destination-price-old">${tour.originalPrice} €</span>
+              <span class="destination-price-new">${tour.price} €</span>
+              <div class="discount-text">
+                ${tour.isPersonalOffer ? '👑 Персональная скидка' : 'Скидка'} ${tour.discountPercent}%
+                ${tour.isPersonalOffer && tour.personalDiscountValidUntil ?
+      `<br><small class="valid-until">Действует до ${new Date(tour.personalDiscountValidUntil).toLocaleDateString('ru-RU')}</small>` : ''}
+              </div>
+            </div>
+          ` : `
+            <span class="destination-price">${tour.price} €</span>
+          `}
         </div>
         <div class="destination-meta">
           <span class="destination-duration">${tour.duration} дней</span>
+          ${tour.isPersonalOffer ? '<span class="personal-offer-tag">👑 Для вас</span>' : ''}
         </div>
         <p class="destination-description">
-         <span class="material-symbols-outlined">location_on</span>
+          <span class="material-symbols-outlined">location_on</span>
           ${tour.country}<br>
-           <span class="material-symbols-outlined">calendar_month</span>
+          <span class="material-symbols-outlined">calendar_month</span>
           ${new Date(tour.startDate).toLocaleDateString()} - ${new Date(tour.endDate).toLocaleDateString()}
         </p>
         <div class="card-actions">
@@ -317,6 +331,7 @@ class SearchUI
     </div>
   `).join('');
   }
+
   async checkAndUpdateFavoriteButtons(results, type) {
     try {
       for (const result of results) {
@@ -343,16 +358,36 @@ class SearchUI
   }
   renderFlights(flights) {
     this.elements.resultsGrid.innerHTML = flights.map(flight => `
-    <div class="destination-card">
+    <div class="destination-card ${flight.hasDiscount ? 'has-discount' : ''} ${flight.isPersonalOffer ? 'personal-offer' : ''}">
       <div class="card-image-container">
         <img src="${flight.imageUrl}" alt="${flight.airline}" class="destination-image">
+        ${flight.hasDiscount ? `
+          <div class="discount-badge ${flight.isPersonalOffer ? 'personal-badge' : ''}">
+            ${flight.isPersonalOffer ? '👑 ' : ''}-${flight.discountPercent}%
+          </div>
+        ` : ''}
         <button class="favorite-btn" data-flight-id="${flight.id}">
           <span class="material-symbols-outlined">favorite</span>
         </button>
       </div>
       <div class="card-content">
         <h3 class="destination-title">${flight.airline} ${flight.flightNumber}</h3>
-        <div class="destination-price">${flight.price} €</div>
+        
+        <div class="destination-price-container">
+          ${flight.hasDiscount ? `
+            <div class="price-with-discount">
+              <span class="destination-price-old">${flight.originalPrice} €</span>
+              <span class="destination-price-new">${flight.price} €</span>
+              <div class="discount-text">
+                ${flight.isPersonalOffer ? '👑 Персональная скидка' : 'Скидка'} ${flight.discountPercent}%
+                ${flight.isPersonalOffer && flight.personalDiscountValidUntil ?
+      `<br><small class="valid-until">Действует до ${new Date(flight.personalDiscountValidUntil).toLocaleDateString('ru-RU')}</small>` : ''}
+              </div>
+            </div>
+          ` : `
+            <span class="destination-price">${flight.price} €</span>
+          `}
+        </div>
         
         <div class="flight-details">
           <div class="flight-from">
@@ -364,6 +399,10 @@ class SearchUI
             <div class="flight-city">${flight.arrivalCity}</div>
             <div class="flight-time">${this.formatDateTime(flight.arrivalTime)}</div>
           </div>
+        </div>
+        
+        <div class="destination-meta">
+          ${flight.isPersonalOffer ? '<span class="personal-offer-tag">👑 Для вас</span>' : ''}
         </div>
         
         <div class="card-actions">
@@ -384,8 +423,6 @@ class SearchUI
   async handleAddToFavorites(tourId, flightId) {
     try {
       const button = event.target.closest('.favorite-btn');
-
-      // Проверяем, не заблокирована ли уже кнопка
       if (button && button.disabled) {
         this.showNotification('Уже в избранном', 'info');
         return;
@@ -394,7 +431,6 @@ class SearchUI
       const result = await SearchService.addToFavorites(tourId, flightId);
       if (result.success) {
         this.showNotification('Добавлено в избранное!', 'success');
-        // Блокируем кнопку после успешного добавления
         if (button) {
           button.style.color = 'gold';
           button.querySelector('span').textContent = 'favorite';
@@ -407,7 +443,6 @@ class SearchUI
     } catch (error) {
       if (error.isAlreadyFavorite) {
         this.showNotification('Уже в избранном', 'info');
-        // Блокируем кнопку при ошибке "уже в избранном"
         const button = event.target.closest('.favorite-btn');
         if (button) {
           button.style.color = 'gold';
@@ -454,11 +489,8 @@ class SearchUI
   `;
 
     document.body.appendChild(notification);
-
-    // Принудительный reflow для анимации
     notification.offsetHeight;
     notification.classList.add('show');
-
     setTimeout(() => {
       notification.classList.remove('show');
       setTimeout(() => {
@@ -492,11 +524,9 @@ class SearchUI
       return count === 1 ? 'рейс' : count < 5 ? 'рейса' : 'рейсов';
     }
   }
-
   getSearchDescription(type) {
     return type === 'tours' ? 'Подобранные туры по вашему запросу' : 'Найденные авиарейсы';
   }
-
   formatDateTime(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString('ru-RU', {

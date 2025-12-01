@@ -1,0 +1,12 @@
+const express = require("express");
+const router = express.Router();
+const BookingManagerController = require("../controllers/ManagerBookingsController");
+router.get('/all', BookingManagerController.getAllBookings);
+router.put('/:bookingId/status',BookingManagerController.updateBookingStatus);
+router.get('/search', BookingManagerController.searchBookings);
+router.get('/stats', BookingManagerController.getBookingStats);
+router.get('/stats/years',BookingManagerController.getAvailableYears);
+router.get('/stats/data', BookingManagerController.getStatisticsData);
+router.get('/stats/extended', BookingManagerController.getExtendedStatistics);
+router.get('/:bookingId/history', BookingManagerController.getBookingHistory);
+module.exports = router;

@@ -47,34 +47,24 @@ document.querySelector('.registration-form').addEventListener('submit', async(e)
   const firstName = formData.get('first-name');
   const lastName = formData.get('last-name');
   const email = formData.get('email');
-
   clearErrors();
-
-  // Проверка имени
   if (!validateName(firstName)) {
     showFieldError('first-name', 'Имя должно содержать только русские буквы и быть одним словом');
     return;
   }
-
-  // Проверка фамилии
   if (!validateName(lastName)) {
     showFieldError('last-name', 'Фамилия должна содержать только русские буквы и быть одним словом');
     return;
   }
-
-  // Проверка email
   if (!validateEmail(email)) {
     showFieldError('email', 'Введите корректный email адрес');
     return;
   }
-
-  // Проверка паролей
   if (password !== confirmPassword) {
     showMessage('Пароли не совпадают','error');
     showFieldError('confirm-password', 'Пароли не совпадают');
     return;
   }
-
   if (!validatePassword(password)) {
     showMessage('Пароль должен содержать не менее 8 символов, включать буквы и специальные символы', 'error');
     showFieldError('password', 'Пароль должен содержать буквы и специальные символы');
@@ -103,8 +93,6 @@ document.querySelector('.registration-form').addEventListener('submit', async(e)
     handleError(error);
   }
 });
-
-// Функции валидации
 function validateName(name) {
   const russianNameRegex = /^[А-ЯЁа-яё]+$/;
   return russianNameRegex.test(name) && name.trim().split(' ').length === 1;
@@ -117,12 +105,8 @@ function validateEmail(email) {
 
 function validatePassword(password) {
   if (password.length < 8) return false;
-
-  // Проверяем, что есть хотя бы одна буква
   const hasLetter = /[a-zA-Zа-яА-Я]/.test(password);
-  // Проверяем, что есть хотя бы один специальный символ или цифра
   const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?0-9]/.test(password);
-
   return hasLetter && hasSpecialChar;
 }
 
@@ -182,8 +166,6 @@ function handleError(error) {
     showMessage(error.error || 'Ошибка регистрации', 'error');
   }
 }
-
-// Функция для переключения видимости пароля
 function createPasswordToggle(inputId) {
   const container = document.querySelector(`#${inputId}`).parentNode;
   container.classList.add('password-input-container');
@@ -202,8 +184,6 @@ function createPasswordToggle(inputId) {
     const input = document.getElementById(inputId);
     const isPassword = input.type === 'password';
     input.type = isPassword ? 'text' : 'password';
-
-    // Обновляем иконку
     this.innerHTML = isPassword ? `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.59 6.59m9.02 9.02l3.29 3.29m-3.29-3.29l-3.29-3.29"/>
@@ -218,15 +198,11 @@ function createPasswordToggle(inputId) {
 
   container.appendChild(toggle);
 }
-
-// Валидация паролей при потере фокуса
 const passwordInput = document.getElementById('password');
 const confirmPasswordInput = document.getElementById('confirm-password');
 
 function validatePasswordOnBlur() {
   const password = passwordInput.value;
-
-  // Очищаем предыдущие ошибки для поля пароля
   const passwordErrors = passwordInput.parentNode.querySelectorAll('.error-message');
   passwordErrors.forEach(error => error.remove());
   passwordInput.classList.remove('error');
@@ -240,8 +216,6 @@ function validatePasswordOnBlur() {
 function validateConfirmPasswordOnBlur() {
   const password = passwordInput.value;
   const confirmPassword = confirmPasswordInput.value;
-
-  // Очищаем предыдущие ошибки для поля подтверждения пароля
   const confirmErrors = confirmPasswordInput.parentNode.querySelectorAll('.error-message');
   confirmErrors.forEach(error => error.remove());
   confirmPasswordInput.classList.remove('error');
@@ -251,27 +225,21 @@ function validateConfirmPasswordOnBlur() {
     showFieldError('confirm-password', 'Пароли не совпадают');
   }
 }
-
-// Валидация при вводе (только для сброса ошибок)
 function clearPasswordErrorOnInput() {
   const errors = passwordInput.parentNode.querySelectorAll('.error-message');
   errors.forEach(error => error.remove());
   passwordInput.classList.remove('error');
 }
-
 function clearConfirmPasswordErrorOnInput() {
   const errors = confirmPasswordInput.parentNode.querySelectorAll('.error-message');
   errors.forEach(error => error.remove());
   confirmPasswordInput.classList.remove('error');
 }
 
-// Добавляем обработчики событий
 passwordInput.addEventListener('blur', validatePasswordOnBlur);
 passwordInput.addEventListener('input', clearPasswordErrorOnInput);
 
 confirmPasswordInput.addEventListener('blur', validateConfirmPasswordOnBlur);
 confirmPasswordInput.addEventListener('input', clearConfirmPasswordErrorOnInput);
-
-// Добавляем глазки к полям паролей
 createPasswordToggle('password');
 createPasswordToggle('confirm-password');

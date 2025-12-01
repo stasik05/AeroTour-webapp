@@ -43,12 +43,8 @@ class PasswordResetService {
       throw new Error(`Ошибка при создании кода восстановления: ${error.message}`);
     }
   }
-
-  // Универсальный метод проверки кода
   async verifyCode(email, code, markAsUsed = false) {
     try {
-      console.log(`🔍 Проверка кода: email=${email}, code=${code}, markAsUsed=${markAsUsed}`);
-
       const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
       const [rows] = await pool.execute(
@@ -56,27 +52,20 @@ class PasswordResetService {
          WHERE email = ? AND code = ? AND used = FALSE AND expires_at > ?`,
         [email, code, currentTime]
       );
-
-      console.log(`📊 Найдено записей: ${rows.length}`);
-
       if (rows.length === 0) {
         return null;
       }
 
       if (markAsUsed) {
-        // Помечаем код как использованный
         await pool.execute(
           'UPDATE password_reset_codes SET used = TRUE WHERE id = ?',
           [rows[0].id]
         );
-        console.log(`✅ Код подтвержден и использован`);
-      } else {
-        console.log(`✅ Код действителен`);
       }
 
       return rows[0];
     } catch (error) {
-      console.error('❌ Ошибка при проверке кода:', error);
+      console.error('Ошибка при проверке кода:', error);
       throw new Error(`Ошибка при проверке кода: ${error.message}`);
     }
   }
@@ -121,12 +110,9 @@ class PasswordResetService {
           </div>
         `
       };
-
       await this.transporter.sendMail(mailOptions);
-      console.log(`✅ Email отправлен на: ${email}`);
     } catch (error) {
       console.error('Ошибка при отправке email:', error);
-      console.log(`📧 Код восстановления для ${email}: ${code}`);
     }
   }
 

@@ -1,11 +1,9 @@
 import { FavoritesService } from '/shared/js/FavoritesService.js';
-
 class FavoritesManager {
   constructor() {
     this.favorites = [];
     this.currentUser = null;
   }
-
   async init() {
     try {
       await this.checkAuth();
@@ -18,10 +16,8 @@ class FavoritesManager {
   async checkAuth()
   {
     const token = localStorage.getItem('token');
-    console.log('🔐 Токен в checkAuth:', token ? 'Есть' : 'Нет');
     if (!token)
     {
-      console.log('No token found');
       return;
     }
     try
@@ -34,11 +30,11 @@ class FavoritesManager {
       }
       else
       {
-        console.log('User data not found in localStorage');
+        console.error('User data not found in localStorage');
       }
     } catch (error)
     {
-      console.log('Auth check failed, but continuing:', error.message);
+      console.error('Auth check failed, but continuing:', error.message);
     }
   }
   updateUserInfo()
@@ -55,10 +51,8 @@ class FavoritesManager {
       }
     }
   }
-
   async loadFavorites() {
     try {
-      console.log('Loading favorites...');
       const response = await FavoritesService.getFavorites();
       this.favorites = response.data;
       this.renderFavorites();
@@ -96,15 +90,6 @@ class FavoritesManager {
       minute: '2-digit'
     });
   }
-  formatTime(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('ru-RU', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
   renderFavorites() {
     const container = document.querySelector('.favorites-grid');
     if (!container) {
@@ -118,12 +103,13 @@ class FavoritesManager {
     }
 
     container.innerHTML = this.favorites.map(favorite => `
-      <div class="favorite-card" data-id="${favorite.id}">
+      <div class="favorite-card ${favorite.item.hasDiscount ? 'has-discount' : ''}" data-id="${favorite.id}">
         <div class="card-image-container">
           <img alt="${favorite.type === 'tour' ? favorite.item.title : `${favorite.item.departure_city} - ${favorite.item.arrival_city}`}" 
                class="card-image" 
                src="${favorite.item.image}"
                onerror="this.src='/images/placeholder.jpg'">
+         
           <button class="delete-button" onclick="favoritesManager.removeFavorite(${favorite.id})">
             <span class="material-symbols-outlined">delete</span>
           </button>
@@ -176,7 +162,17 @@ class FavoritesManager {
             `}
           </div>
           <div class="card-footer">
-            <span class="card-price">€${favorite.item.price || '0'}</span>
+            <div class="price-container">
+              ${favorite.item.hasDiscount ? `
+                <div class="price-with-discount">
+                  <span class="original-price">€${favorite.item.originalPrice}</span>
+                  <span class="final-price">€${favorite.item.price}</span>
+                  <div class="discount-text">Скидка ${favorite.item.discountPercent}%</div>
+                </div>
+              ` : `
+                <span class="card-price">€${favorite.item.price || '0'}</span>
+              `}
+            </div>
             <div class="card-actions">
               ${this.getQuickActionButton(favorite)}
             </div>

@@ -86,8 +86,6 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
     font-weight: 700;
 }
-
-/* Стили шапки */
 .header {
     width: 100%;
     background-color: rgba(15, 23, 42, 0.7);
@@ -543,6 +541,17 @@ h1, h2, h3, h4, h5, h6 {
     z-index: 10;
     padding: 3rem 0;
 }
+.content-wrapper1 {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.1);
+    backdrop-filter: blur(4px);
+    z-index: 10;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
 
 /* Анимации */
 @keyframes blob {
@@ -819,8 +828,13 @@ h1, h2, h3, h4, h5, h6 {
 .advanced-search-link:hover {
     color: #fde047;
 }
-
-/* Стили сетки направлений */
+.centered-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    width: 100%;
+}
 .destinations-grid, .favorites-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -1256,17 +1270,25 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 2rem;
 }
 
-/* Стили для чата */
 .chat-container {
     flex: 1;
     display: flex;
     flex-direction: column;
     background-color: rgba(15, 23, 42, 0.6);
     backdrop-filter: blur(20px);
-    border-radius: 1rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+
+.chat-container.active {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    margin: 0;
 }
 
 .chat-header {
@@ -1292,6 +1314,7 @@ h1, h2, h3, h4, h5, h6 {
     height: 3rem;
     border-radius: 50%;
     border: 2px solid var(--secondary-color);
+    object-fit: cover;
 }
 
 .online-indicator {
@@ -1323,13 +1346,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .messages-container {
     flex: 1;
-    padding: 1.5rem;
+    overflow-y: auto;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    overflow-y: auto;
+    gap: 1rem;
+    margin: 0;
 }
-
 .message {
     display: flex;
     gap: 0.75rem;
@@ -1521,7 +1544,7 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .chat-container {
-        max-width: 800px;
+        max-width: 100%;
         margin: 0 auto;
         width: 100%;
     }
@@ -3327,4 +3350,1705 @@ input[type="date"]::placeholder {
 
 .favorite-btn.gold span {
     font-variation-settings: 'FILL' 1;
+}
+.menu-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    min-height: 280px;
+    border-radius: 1rem;
+    background-color: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    text-align: center;
+    transform: translateY(0);
+    transition: transform 0.3s;
+    text-decoration: none;
+}
+
+.dark-mode .menu-card {
+    background-color: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.menu-card:hover {
+    transform: translateY(-0.5rem);
+}
+
+.menu-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.menu-card:hover::before {
+    opacity: 1;
+}
+
+.menu-card-primary::before {
+    background-color: rgba(79, 70, 229, 0.2);
+}
+
+.menu-card-secondary::before {
+    background-color: rgba(16, 185, 129, 0.2);
+}
+
+.menu-card-accent::before {
+    background-color: rgba(245, 158, 11, 0.2);
+}
+
+.menu-card-pink::before {
+    background-color: rgba(236, 72, 153, 0.2);
+}
+
+.menu-card-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.menu-card-icon {
+    font-size: 4.5rem;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.4));
+    transition: color 0.3s;
+}
+
+.menu-card-primary .menu-card-icon {
+    color: #4f46e5;
+}
+
+.menu-card:hover .menu-card-primary .menu-card-icon {
+    color: #a5b4fc;
+}
+
+.menu-card-secondary .menu-card-icon {
+    color: #10b981;
+}
+
+.menu-card:hover .menu-card-secondary .menu-card-icon {
+    color: #6ee7b7;
+}
+
+.menu-card-accent .menu-card-icon {
+    color: #f59e0b;
+}
+
+.menu-card:hover .menu-card-accent .menu-card-icon {
+    color: #fcd34d;
+}
+
+.menu-card-pink .menu-card-icon {
+    color: #ec4899;
+}
+
+.menu-card:hover .menu-card-pink .menu-card-icon {
+    color: #f9a8d4;
+}
+
+.menu-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.875rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+}
+
+.menu-card-description {
+    color: #cbd5e1;
+    font-size: 1rem;
+}
+.content-overlay {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.1);
+    backdrop-filter: blur(4px);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 0;
+}
+
+.dark-mode .content-overlay {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Стили для grid */
+.destinations-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+}
+
+@media (min-width: 768px) {
+    .destinations-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(250px, 300px));
+    gap: 2rem;
+    width: 100%;
+    justify-content: center;
+    justify-items: center;
+
+}
+
+@media (min-width: 768px) {
+    .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .actions-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+.action-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    min-height: 220px;
+    border-radius: 1rem;
+    background-color: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    text-align: center;
+    transform: translateY(0);
+    transition: transform 0.3s;
+    text-decoration: none;
+    width: 100%;
+    max-width: 300px;
+}
+.actions-grid1 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.action-card1{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    min-height: 220px;
+    border-radius: 1rem;
+    background-color: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    text-align: center;
+    transform: translateY(0);
+    transition: transform 0.3s;
+    text-decoration: none;
+    width: 300px;
+    max-width: 100%;
+}
+
+.dark-mode .action-card {
+    background-color: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(51, 65, 85, 0.3);
+}
+.dark-mode .action-card1 {
+    background-color: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.action-card:hover {
+    transform: translateY(-0.5rem);
+}
+.action-card1:hover {
+    transform: translateY(-0.5rem);
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.action-card1::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.action-card:hover::before {
+    opacity: 1;
+}
+
+.action-card1:hover::before {
+    opacity: 1;
+}
+.action-card-primary::before {
+    background-color: rgba(79, 70, 229, 0.2);
+}
+.action-card1-primary::before {
+    background-color: rgba(79, 70, 229, 0.2);
+}
+.action-card-secondary::before {
+    background-color: rgba(16, 185, 129, 0.2);
+}
+.action-card1-secondary::before {
+    background-color: rgba(16, 185, 129, 0.2);
+}
+
+.action-card-accent::before {
+    background-color: rgba(245, 158, 11, 0.2);
+}
+.action-card1-accent::before {
+    background-color: rgba(245, 158, 11, 0.2);
+}
+
+.action-card-pink::before {
+    background-color: rgba(236, 72, 153, 0.2);
+}
+
+.action-card-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.action-card-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.4));
+    transition: color 0.3s;
+}
+
+.action-card-primary .action-card-icon {
+    color: #4f46e5;
+}
+
+.action-card:hover .action-card-primary .action-card-icon {
+    color: #a5b4fc;
+}
+
+.action-card-secondary .action-card-icon {
+    color: #10b981;
+}
+
+.action-card:hover .action-card-secondary .action-card-icon {
+    color: #6ee7b7;
+}
+
+.action-card-accent .action-card-icon {
+    color: #f59e0b;
+}
+
+.action-card:hover .action-card-accent .action-card-icon {
+    color: #fcd34d;
+}
+
+.action-card-pink .action-card-icon {
+    color: #ec4899;
+}
+
+.action-card:hover .action-card-pink .action-card-icon {
+    color: #f9a8d4;
+}
+
+.action-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.new-messages-indicator {
+    position: sticky;
+    bottom: 10px;
+    margin: 10px auto;
+    text-align: center;
+    z-index: 100;
+}
+
+.indicator-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(79, 70, 229, 0.9);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    backdrop-filter: blur(10px);
+    animation: pulse 2s infinite;
+}
+
+.indicator-content button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.indicator-content button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.message {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: linear-gradient(135deg, #ff4444, #ff6b6b);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Контейнер для цен со скидкой */
+.price-with-discount {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+/* Старая цена (зачеркнутая) */
+.destination-price-old {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+/* Новая цена со скидкой */
+.destination-price-new {
+    color: #ff4444;
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+/* Текст скидки */
+.discount-text {
+    color: #ff4444;
+    font-size: 12px;
+    font-weight: bold;
+    background: rgba(255, 68, 68, 0.1);
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+
+/* Карточка со скидкой */
+.destination-card.has-discount {
+    border: 2px solid rgba(255, 68, 68, 0.2);
+    position: relative;
+}
+
+.destination-card.has-discount::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff4444, #ff6b6b);
+    border-radius: 3px 3px 0 0;
+}
+.destination-card.has-discount {
+    animation: pulseDiscount 2s infinite;
+}
+
+@keyframes pulseDiscount {
+    0% { box-shadow: 0 2px 8px rgba(255, 68, 68, 0.1); }
+    50% { box-shadow: 0 4px 16px rgba(255, 68, 68, 0.2); }
+    100% { box-shadow: 0 2px 8px rgba(255, 68, 68, 0.1); }
+}
+.price-container {
+    margin-bottom: 10px;
+}
+
+.price-with-discount {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.final-price {
+    color: #ff4444;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.discount-text {
+    color: #ff4444;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(255, 68, 68, 0.1);
+    padding: 4px 8px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.personal-offer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ffd700, #ffed4e);
+    border-radius: 8px 8px 0 0;
+}
+
+.personal-badge {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #000;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+}
+
+.personal-offer-tag {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #000;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.discount-text .valid-until {
+    color: #666;
+    font-size: 11px;
+    margin-top: 2px;
+    display: block;
+}
+
+/* Анимация для персонализированных предложений */
+.personal-offer {
+    animation: pulseGold 3s infinite;
+}
+
+@keyframes pulseGold {
+    0% {
+        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.1);
+    }
+    50% {
+        box-shadow: 0 4px 16px rgba(255, 215, 0, 0.2);
+    }
+    100% {
+        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.1);
+    }
+}
+.has-discount:not(.personal-offer)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff4444, #ff6b6b);
+    border-radius: 8px 8px 0 0;
+}
+
+.discount-badge:not(.personal-badge) {
+    background: linear-gradient(135deg, #ff4444, #ff6b6b);
+    color: white;
+    box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .personal-offer-tag {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+
+    .discount-text .valid-until {
+        font-size: 10px;
+    }
+}
+/* Стили для модального окна погоды */
+.weather-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 1rem;
+    backdrop-filter: blur(8px);
+}
+
+.weather-modal {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-radius: 1.5rem;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.weather-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.5);
+}
+
+.weather-modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+}
+
+.weather-modal-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.weather-modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.weather-modal-content {
+    padding: 2rem;
+}
+
+/* Стили для поиска */
+.weather-search-section {
+    margin-bottom: 2rem;
+    position: relative; /* Добавляем это */
+}
+
+.search-suggestions {
+    position: absolute;
+    width: calc(100% - 2rem);
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    margin-top: 0.5rem;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    top: 100%; /* Добавляем это */
+    left: 0; /* Добавляем это */
+}
+
+.search-input-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.weather-search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.75rem;
+    background: rgba(15, 23, 42, 0.6);
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.weather-search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+}
+
+.weather-search-input::placeholder {
+    color: #94a3b8;
+}
+
+.weather-search-button {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(to right, var(--primary), #818cf8);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.weather-search-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+}
+
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background-color 0.2s ease;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.suggestion-info {
+    flex: 1;
+}
+
+.suggestion-name {
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.suggestion-details {
+    font-size: 0.875rem;
+    color: #94a3b8;
+}
+
+.suggestion-arrow {
+    color: #64748b;
+}
+
+.no-results {
+    opacity: 0.7;
+    cursor: default;
+}
+
+.no-results:hover {
+    background: transparent;
+}
+
+/* Выбор режима просмотра */
+.date-selection {
+    background: rgba(15, 23, 42, 0.5);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.view-mode-selector {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.mode-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.mode-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.mode-option input[type="radio"] {
+    display: none;
+}
+
+.radio-custom {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid #475569;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.mode-option input[type="radio"]:checked + .radio-custom {
+    border-color: var(--primary);
+    background: var(--primary);
+}
+
+.mode-option input[type="radio"]:checked + .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0.5rem;
+    height: 0.5rem;
+    background: white;
+    border-radius: 50%;
+}
+
+.date-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.date-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.date-input-group label {
+    color: #cbd5e1;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.weather-date-input,
+.weather-start-date,
+.weather-end-date {
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    background: rgba(15, 23, 42, 0.8);
+    color: white;
+    font-size: 1rem;
+}
+
+.weather-date-input:focus,
+.weather-start-date:focus,
+.weather-end-date:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.date-range-inputs {
+    display: flex;
+    gap: 1rem;
+}
+
+.date-input-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Результаты погоды */
+.weather-results {
+    min-height: 400px;
+}
+
+.weather-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 3rem;
+    color: #94a3b8;
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-left: 3px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.weather-welcome {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #94a3b8;
+}
+
+.welcome-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.weather-welcome h3 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.weather-welcome p {
+    margin-bottom: 2rem;
+    font-size: 1.125rem;
+}
+
+.welcome-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0.75rem;
+}
+
+.weather-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.weather-error .material-symbols-outlined {
+    font-size: 4rem;
+    color: #f87171;
+    opacity: 0.7;
+}
+
+.error-content h4 {
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.error-message {
+    color: #94a3b8;
+    margin-bottom: 1.5rem;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+.retry-button {
+    padding: 0.75rem 1.5rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+    background: var(--primary-700);
+    transform: translateY(-2px);
+}
+
+/* Контент погоды */
+.weather-content {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.weather-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.weather-location {
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.weather-date-info {
+    font-size: 1.125rem;
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+}
+
+.weather-data-type {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--primary);
+    color: white;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.data-reliability-note {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin-top: 0.5rem;
+}
+
+/* Текущая погода */
+.current-weather-section {
+    margin-bottom: 2rem;
+}
+
+.current-weather-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    text-align: center;
+}
+
+.weather-icon-large {
+    font-size: 6rem;
+    color: var(--accent);
+}
+
+.current-weather-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.current-temp {
+    font-size: 4rem;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+}
+
+.current-description {
+    font-size: 1.5rem;
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+}
+
+.current-details {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+/* Прогноз на несколько дней */
+.weather-forecast-section h4 {
+    color: white;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+.forecast-grid-modal {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.forecast-day-modal {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.forecast-day-modal:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.forecast-date {
+    font-weight: 600;
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.forecast-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--accent);
+}
+
+.forecast-temps {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.temp-max {
+    font-weight: 700;
+    color: white;
+}
+
+.temp-min {
+    color: #94a3b8;
+}
+
+.forecast-weather {
+    font-size: 0.875rem;
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+}
+
+.forecast-precipitation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: #60a5fa;
+}
+
+/* Погода на одну дату */
+.single-date-weather-modal {
+    background: rgba(15, 23, 42, 0.3);
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.date-weather-header-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.weather-icon-xlarge {
+    font-size: 8rem;
+    color: var(--accent);
+}
+
+.date-weather-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.selected-date-large {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+}
+
+.weather-description-large {
+    font-size: 1.25rem;
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+}
+
+.temperature-range-large {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+.weather-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.weather-detail-card {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.detail-icon {
+    font-size: 2rem;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.detail-content {
+    flex: 1;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.detail-values {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-value {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #cbd5e1;
+    font-size: 0.875rem;
+}
+
+.detail-value .value {
+    color: white;
+    font-weight: 600;
+}
+
+.detail-value-single {
+    color: white;
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+/* Расширенный прогноз */
+.range-weather-section {
+    background: rgba(15, 23, 42, 0.3);
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.period-info {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.period-info h4 {
+    color: white;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.period-dates {
+    color: #cbd5e1;
+    font-size: 1.125rem;
+}
+
+.forecast-grid-extended {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.forecast-day-extended {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.5rem;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.forecast-day-extended:hover {
+    transform: translateX(5px);
+    border-color: var(--primary);
+}
+
+.forecast-date {
+    font-weight: 600;
+    color: white;
+    min-width: 100px;
+}
+
+.forecast-icon {
+    font-size: 2.5rem;
+    color: var(--accent);
+}
+
+.forecast-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.forecast-temp-range {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.forecast-description {
+    color: #cbd5e1;
+    font-size: 0.875rem;
+}
+
+.forecast-details {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.forecast-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+/* Бейджи надежности */
+.reliability-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.reliability-badge.medium {
+    background: #f59e0b;
+    color: #451a03;
+}
+
+.reliability-badge.low {
+    background: #ef4444;
+    color: white;
+}
+
+.no-weather-data {
+    text-align: center;
+    padding: 3rem;
+    color: #94a3b8;
+    font-size: 1.125rem;
+}
+
+/* Стиль для кнопки погоды */
+.button-weather {
+    background: linear-gradient(to right, #0ea5e9, #3b82f6);
+    color: white;
+    box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.5);
+}
+
+.button-weather:hover {
+    background: linear-gradient(to right, rgba(14, 165, 233, 0.9), rgba(59, 130, 246, 0.9));
+    transform: scale(1.05);
+    box-shadow: 0 20px 25px -5px rgba(14, 165, 233, 0.7);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .weather-modal {
+        margin: 1rem;
+        max-height: 95vh;
+    }
+
+    .weather-modal-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .weather-modal-content {
+        padding: 1.5rem;
+    }
+
+    .search-input-container {
+        flex-direction: column;
+    }
+
+    .view-mode-selector {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .date-range-inputs {
+        flex-direction: column;
+    }
+
+    .current-weather-main {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .current-temp {
+        font-size: 3rem;
+    }
+
+    .weather-icon-large {
+        font-size: 4rem;
+    }
+
+    .weather-icon-xlarge {
+        font-size: 6rem;
+    }
+
+    .forecast-grid-modal {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+
+    .forecast-day-extended {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .weather-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .date-weather-header-modal {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .weather-modal-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .weather-location {
+        font-size: 1.5rem;
+    }
+
+    .current-temp {
+        font-size: 2.5rem;
+    }
+
+    .forecast-grid-modal {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+.global-discount-card {
+    border: 2px solid #ff6b6b;
+    background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+    grid-column: 1 / -1; /* Занимает всю ширину */
+}
+
+.global-discount-card .offer-header {
+    text-align: center;
+    position: relative;
+}
+
+.global-discount-icon {
+    font-size: 3rem;
+    color: #ff6b6b;
+    margin-bottom: 1rem;
+}
+
+.global-discount-icon .material-symbols-outlined {
+    font-size: 3rem;
+}
+
+.global-price {
+    text-align: center;
+    padding: 1rem 0;
+    border-top: 1px solid #ffe0e0;
+    border-bottom: 1px solid #ffe0e0;
+    margin: 1rem 0;
+}
+
+.discount-percent-large {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #ff6b6b;
+    display: block;
+    line-height: 1;
+}
+
+.discount-label {
+    font-size: 1rem;
+    color: #666;
+    display: block;
+    margin-top: 0.5rem;
+}
+
+.global-discount-card .offer-details .offer-detail {
+    justify-content: flex-start;
+    text-align: left;
+    padding: 0.5rem 0;
+}
+
+.global-discount-card .offer-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.global-discount-card .btn-primary {
+    flex: 1;
+    justify-content: center;
+    max-width: 200px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .global-discount-card .offer-actions {
+        flex-direction: column;
+    }
+
+    .global-discount-card .btn-primary {
+        max-width: none;
+    }
+}
+.tab-button {
+    flex: 1;
+    padding: 12px 20px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6c757d;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.tab-button:hover {
+    color: #495057;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.tab-button.active {
+    color: #fff;
+    background: #007bff;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+.tab-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Стили для иконок в кнопках */
+.tab-button .material-symbols-outlined {
+    font-size: 18px;
+    transition: transform 0.2s ease;
+}
+
+.tab-button.active .material-symbols-outlined {
+    transform: scale(1.1);
+}
+
+/* Стили для содержимого вкладок */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Стили для индикатора (альтернативный вариант) */
+.tabs-header.with-indicator {
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.tabs-header.with-indicator .tab-button {
+    border-radius: 8px 8px 0 0;
+    background: transparent;
+    position: relative;
+    margin-bottom: -2px;
+}
+
+.tabs-header.with-indicator .tab-button.active {
+    background: transparent;
+    color: #007bff;
+    box-shadow: none;
+    border-bottom: 2px solid #007bff;
+}
+
+/* Вариант с закругленными углами только сверху */
+.tabs-header.rounded-top .tab-button {
+    border-radius: 12px 12px 0 0;
+}
+
+/* Стили для счетчиков/баджей на вкладках */
+.tab-badge {
+    background: #6c757d;
+    color: white;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+}
+
+.tab-button.active .tab-badge {
+    background: rgba(255, 255, 255, 0.9);
+    color: #007bff;
+}
+
+/* Стили для разных цветовых тем */
+.tab-button.success.active {
+    background: #28a745;
+}
+
+.tab-button.warning.active {
+    background: #ffc107;
+    color: #212529;
+}
+
+.tab-button.danger.active {
+    background: #dc3545;
+}
+
+.tab-button.info.active {
+    background: #17a2b8;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .tabs-header {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .tab-button {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+
+    .tab-button .material-symbols-outlined {
+        font-size: 16px;
+    }
+}
+
+/* Стили для вертикальных вкладок */
+.tabs-vertical {
+    display: flex;
+    gap: 1rem;
+}
+
+.tabs-vertical .tabs-header {
+    flex-direction: column;
+    width: 200px;
+    flex-shrink: 0;
+}
+
+.tabs-vertical .tab-content {
+    flex: 1;
+}
+
+/* Стили для заполненных вкладок */
+.tabs-header.filled .tab-button {
+    border: 1px solid #dee2e6;
+    margin: 0 -1px;
+}
+
+.tabs-header.filled .tab-button.active {
+    background: #007bff;
+    border-color: #007bff;
+    z-index: 2;
+}
+
+/* Стили для вкладок с иконками сверху */
+.tab-button.icon-top {
+    flex-direction: column;
+    padding: 16px 12px;
+    gap: 6px;
+}
+
+.tab-button.icon-top .material-symbols-outlined {
+    font-size: 20px;
 }

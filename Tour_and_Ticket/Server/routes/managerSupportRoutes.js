@@ -1,0 +1,12 @@
+const express = require('express');
+const router = express.Router();
+const authMiddleware = require('../middleware/authMiddleware');
+const ManagerSupportController = require('../controllers/ManagerSupportController');
+router.use(authMiddleware);
+router.use(require('../middleware/managerMiddleware'));
+router.get('/tickets', ManagerSupportController.getTickets);
+router.get('/chat/:userId', ManagerSupportController.getChat);
+router.post('/message', ManagerSupportController.sendMessage);
+router.put('/ticket/:ticketId/close', ManagerSupportController.closeTicket);
+router.get('/stats', ManagerSupportController.getStats);
+module.exports = router;

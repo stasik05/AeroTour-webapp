@@ -3,7 +3,6 @@ const router = express.Router();
 const FavoriteController = require('../controllers/FavoritesController');
 const authMiddleware = require('../middleware/authMiddleware');
 router.use(authMiddleware);
-
 router.get('/', async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -20,7 +19,6 @@ router.get('/', async (req, res) => {
     });
   }
 });
-
 router.post('/', async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -32,7 +30,6 @@ router.post('/', async (req, res) => {
         error: 'Необходимо указать tourId или flightId'
       });
     }
-
     const favorite = await FavoriteController.addToFavorites(userId, tourId, flightId);
     res.json({
       success: true,
@@ -42,9 +39,8 @@ router.post('/', async (req, res) => {
   } catch (error) {
     console.error('Error adding to favorites:', error);
 
-    // Специальная обработка для ошибки "Уже в избранном"
     if (error.message && error.message.includes('Уже в избранном')) {
-      return res.status(409).json({ // 409 Conflict - подходящий статус для дублирования
+      return res.status(409).json({
         success: false,
         error: error.message,
         isAlreadyFavorite: true

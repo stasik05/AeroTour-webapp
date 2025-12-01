@@ -107,6 +107,84 @@ class User {
             throw new Error(`Ошибка при поиске пользователя: ${error.message}`);
         }
     }
+    static async findAll()
+    {
+        try
+        {
+            const [rows] = await pool.execute
+            (
+              `SELECT u.*, r.name as role_name
+              FROM users u 
+              LEFT JOIN roles r ON u.role_id = r.id
+              ORDER BY u.created_at DESC`
+            );
+            return rows.map(userData => {
+                const role = new Role(userData.role_id, userData.role_name);
+                return new User(
+                  userData.id,
+                  role,
+                  userData.name,
+                  userData.last_name,
+                  userData.email,
+                  userData.password,
+                  userData.phone,
+                  userData.created_at,
+                  userData.photo
+                );
+            });
+        }
+        catch (error)
+        {
+            throw new Error(`Ошибка при получении пользователей: ${error.message}`);
+        }
+    }
+    static async deleteById(id)
+    {
+        try
+        {
+            const [result] = await pool.execute
+            (
+              `DELETE FROM users WHERE id = ?`,
+              [id]
+            );
+            if (result.affectedRows === 0) {
+                throw new Error('Пользователь не найден');
+            }
+            return true;
+        }
+        catch (error) {
+            throw new Error(`Ошибка при удалении пользователя: ${error.message}`);
+        }
+    }
+    static async findByRole(roleName) {
+        try {
+            const [rows] = await pool.execute(
+              `SELECT u.*, r.name as role_name
+               FROM users u
+                        LEFT JOIN roles r ON u.role_id = r.id
+               WHERE r.name = ?
+               ORDER BY u.created_at DESC`,
+              [roleName]
+            );
+
+            return rows.map(userData => {
+                const role = new Role(userData.role_id, userData.role_name);
+                return new User(
+                  userData.id,
+                  role,
+                  userData.name,
+                  userData.last_name,
+                  userData.email,
+                  userData.password,
+                  userData.phone,
+                  userData.created_at,
+                  userData.photo
+                );
+            });
+        } catch (error) {
+            throw new Error(`Ошибка при поиске пользователей по роли: ${error.message}`);
+        }
+    }
     static async create(userData)
     {
         try

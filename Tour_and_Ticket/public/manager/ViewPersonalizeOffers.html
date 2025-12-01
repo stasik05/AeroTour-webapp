@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>AeroTour - Просмотр персонализированных предложений</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <link rel="stylesheet" href="/shared/css/styles.css">
+  <style>
+      .content-container {
+          max-width: 1200px;
+          margin: 2rem auto;
+          padding: 2rem;
+          background: rgba(15, 23, 42, 0.8);
+          backdrop-filter: blur(20px);
+          border-radius: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: white;
+      }
+
+      .page-title {
+          font-family: 'Playfair Display', serif;
+          color: white;
+          text-align: center;
+          margin-bottom: 2rem;
+          font-size: 2rem;
+      }
+
+      .page-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 2rem;
+      }
+
+      .search-filters {
+          display: grid;
+          grid-template-columns: 2fr 1fr 1fr 1fr auto;
+          gap: 1rem;
+          margin-bottom: 2rem;
+          align-items: end;
+      }
+
+      .form-input, .form-select {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 0.5rem;
+          background: rgba(15, 23, 42, 0.6);
+          color: white;
+          font-size: 1rem;
+      }
+
+      .btn {
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+      }
+
+      .btn-primary {
+          background: #4f46e5;
+          color: white;
+      }
+
+      .btn-primary:hover {
+          background: #4338ca;
+      }
+
+      .btn-secondary {
+          background: #6b7280;
+          color: white;
+      }
+
+      .btn-secondary:hover {
+          background: #4b5563;
+      }
+
+      .btn-success {
+          background: #10b981;
+          color: white;
+      }
+
+      .btn-success:hover {
+          background: #059669;
+      }
+
+      .btn-warning {
+          background: #f59e0b;
+          color: white;
+      }
+
+      .btn-warning:hover {
+          background: #d97706;
+      }
+
+      .btn-danger {
+          background: #ef4444;
+          color: white;
+      }
+
+      .btn-danger:hover {
+          background: #dc2626;
+      }
+
+      .btn-sm {
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+      }
+
+      .offers-grid {
+          display: grid;
+          gap: 1.5rem;
+      }
+
+      .offer-card {
+          background: rgba(30, 41, 59, 0.6);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 0.75rem;
+          padding: 1.5rem;
+          transition: all 0.3s;
+      }
+
+      .offer-card:hover {
+          border-color: rgba(79, 70, 229, 0.5);
+          transform: translateY(-2px);
+      }
+
+      .offer-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: start;
+          margin-bottom: 1rem;
+          gap: 1rem;
+      }
+
+      .offer-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: white;
+          margin: 0;
+          flex: 1;
+      }
+
+      .offer-percent {
+          font-size: 1.5rem;
+          font-weight: bold;
+          color: #10b981;
+          white-space: nowrap;
+      }
+
+      .offer-description {
+          color: #cbd5e1;
+          margin-bottom: 1rem;
+          line-height: 1.5;
+      }
+
+      .offer-info {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1rem;
+          margin-bottom: 1rem;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 0.5rem;
+      }
+
+      .info-item {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+      }
+
+      .info-label {
+          font-size: 0.875rem;
+          color: #94a3b8;
+      }
+
+      .info-value {
+          color: #e2e8f0;
+          font-weight: 500;
+      }
+
+      .offer-actions {
+          display: flex;
+          gap: 0.5rem;
+          justify-content: flex-end;
+          flex-wrap: wrap;
+      }
+
+      .status-badge {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          border-radius: 1rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          white-space: nowrap;
+      }
+
+      .status-active {
+          background: #10b981;
+          color: white;
+      }
+
+      .status-expired {
+          background: #ef4444;
+          color: white;
+      }
+
+      .type-badge {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          border-radius: 1rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          background: rgba(79, 70, 229, 0.2);
+          color: #c7d2fe;
+          margin-left: 0.5rem;
+      }
+
+      .empty-state {
+          text-align: center;
+          padding: 3rem;
+          color: #94a3b8;
+      }
+
+      .empty-state .material-symbols-outlined {
+          font-size: 3rem;
+          margin-bottom: 1rem;
+      }
+
+      .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1rem;
+          margin-bottom: 2rem;
+      }
+
+      .stat-card {
+          background: rgba(30, 41, 59, 0.6);
+          border-radius: 0.75rem;
+          padding: 1.5rem;
+          text-align: center;
+      }
+
+      .stat-value {
+          font-size: 2rem;
+          font-weight: bold;
+          color: white;
+          margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+          color: #94a3b8;
+          font-size: 0.875rem;
+      }
+
+      .user-info {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 1rem;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 0.5rem;
+      }
+
+      .user-ava {
+          width: 60px;
+          height: 60px;
+          object-fit: cover;
+          border-radius: var(--border-radius-full);
+          border: 2px solid var(--accent-color);
+      }
+
+      .user-details {
+          flex: 1;
+      }
+
+      .user-name {
+          font-weight: 600;
+          color: white;
+          margin-bottom: 0.25rem;
+      }
+
+      .user-email {
+          color: #94a3b8;
+          font-size: 0.875rem;
+      }
+      .back-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          background: #6b7280;
+          color: white;
+          text-decoration: none;
+          border-radius: 0.5rem;
+          margin-bottom: 2rem;
+          transition: all 0.3s;
+      }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <h1 class="logo-text">AeroTour</h1>
+        </div>
+        <nav class="navigation">
+          <a class="nav-link" href="/manager/main-menu">
+            <span class="material-symbols-outlined">home</span>
+            <span class="nav-link-text">Главное меню</span>
+          </a>
+          <a class="nav-link" href="/manager/main-menu/manager-support">
+            <span class="material-symbols-outlined">support_agent</span>
+            <span class="nav-link-text">Поддержка</span>
+          </a>
+          <a class="nav-link active" href="/manager/main-menu/discount/personalized-offers/view">
+            <span class="material-symbols-outlined">visibility</span>
+            <span class="nav-link-text">Просмотр</span>
+          </a>
+          <a class="nav-link" href="/manager/main-menu/profile">
+            <span class="material-symbols-outlined">person</span>
+            <span class="nav-link-text">Личный кабинет</span>
+          </a>
+        </nav>
+        <div class="user-actions">
+          <button class="notification-button">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <img alt="User avatar" class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="main-content">
+    <div class="background-animation">
+      <div class="background-overlay"></div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+    <div class="content-overlay">
+      <div class="container">
+        <div class="content-container">
+          <a href="/manager/main-menu/discount/personalized-offers" class="back-btn">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Назад
+          </a>
+          <div class="search-filters">
+            <div>
+              <label class="form-label">Поиск</label>
+              <input type="text" class="form-input" id="searchQuery" placeholder="Поиск по клиенту или описанию...">
+            </div>
+            <div>
+              <label class="form-label">Статус</label>
+              <select class="form-select" id="statusFilter">
+                <option value="all">Все статусы</option>
+                <option value="active">Активные</option>
+                <option value="expired">Истекшие</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Тип предложения</label>
+              <select class="form-select" id="offerTypeFilter">
+                <option value="all">Все типы</option>
+                <option value="general">Общие</option>
+                <option value="tour">На туры</option>
+                <option value="flight">На перелеты</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Дата с</label>
+              <input type="date" class="form-input" id="dateFrom">
+            </div>
+            <div>
+              <button class="btn btn-primary" id="searchBtn">
+                <span class="material-symbols-outlined">search</span>
+                Поиск
+              </button>
+            </div>
+          </div>
+
+          <div class="offers-grid" id="offersList">
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/manager/js/ViewPersonalizedOffers.js"></script>
+</body>
+</html>

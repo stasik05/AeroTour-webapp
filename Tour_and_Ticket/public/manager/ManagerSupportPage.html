@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>AeroTour - Чат с поддержкой менеджер</title>
+  <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:wght@700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <link rel="stylesheet" href="/shared/css/styles.css">
+</head>
+<body>
+<div class="page-container">
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <h1 class="logo-text">AeroTour</h1>
+        </div>
+        <nav class="navigation">
+          <a class="nav-link" href="/manager/main-menu">
+            <span class="material-symbols-outlined">home</span>
+            <span class="nav-link-text">Главное меню</span>
+          </a>
+          <a class="nav-link active">
+            <span class="material-symbols-outlined">support_agent</span>
+            <span class="nav-link-text">Поддержка</span>
+          </a>
+          <a class="nav-link" href="/manager/main-menu/profile">
+            <span class="material-symbols-outlined">person</span>
+            <span class="nav-link-text">Личный кабинет</span>
+          </a>
+        </nav>
+        <div class="header-actions">
+          <button class="icon-button">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <img alt="User avatar" class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="main-content">
+    <div class="background-overlay">
+      <div class="background-gradient"></div>
+      <div class="background-blob blob-1"></div>
+      <div class="background-blob blob-2"></div>
+      <div class="background-blob blob-3"></div>
+    </div>
+    <div class="content-wrapper1">
+      <div class="chat-container">
+        <header class="chat-header">
+          <div class="manager-info">
+            <div class="manager-avatar">
+              <img alt="Manager avatar" class="avatar-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDth5yyfFgRwcMdKHt75eguAf0vR86Svkau7JNW0pAuO9_fsoPX-7C3vrbFcwNNFbA9e1GO3Npwm2XHhG52S41MxDNIyNqAsN_nV2KE_g4pqkbrxjNz0P1D2SwW8i3uzdaW7aqJnBA1OS_M85WC66QM5MB4SYpvsYt6ppJilDUUGI_sVPzH6aNbbB9ZzsA17dFFqJmamwut37_l68Whr7PzBWQIN0ScoTgx3QUcIii6lWQTNkQ7mDO8yjL2r2S5dQg8LMd7Dz1dLvk"/>
+              <span class="online-indicator"></span>
+            </div>
+            <div class="manager-details">
+              <h2 class="manager-name">Александр</h2>
+              <p class="online-status">
+                <span class="material-symbols-outlined">circle</span>
+                <span>Онлайн</span>
+              </p>
+            </div>
+          </div>
+          <button class="menu-button">
+            <span class="material-symbols-outlined">more_vert</span>
+          </button>
+        </header>
+        <div class="messages-container">
+          <div class="message received">
+            <div class="message-avatar">
+              <img alt="Manager avatar" class="avatar-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB62nJ4Q0K4tr2sVuRS9_IiBRo-d4h1Vr-fpVps9EoQhy0Jn8NI_rYN1ZQ60vGV21j42LopZekCwhNF7a9sGFUOI3KgaTzIpQDfQxcgd8AK_eNT3cxtfg8nMxmB9PbjbBfD43ZUrQhJTdg8FUZHS91mZnDVXkj4uOlY7mMp7Pv7FHlqNemebtEIFNj7VVn3Phglw6PWbBctgYWypgAEw6PC-Xbrrh8Y0mcs0Nk96GBUS4ZdqtOdN3d2qF_7wL8FgR2ImnL92cp5bD4"/>
+            </div>
+            <div class="message-content">
+              <div class="message-bubble received">
+                <p class="message-text">Здравствуйте! Чем могу помочь?</p>
+                <span class="message-time">10:00</span>
+              </div>
+            </div>
+          </div>
+          <div class="message sent">
+            <div class="message-content">
+              <div class="message-bubble sent">
+                <p class="message-text">Добрый день! Я хотел бы уточнить детали по моему заказу #12345. Могу ли я изменить дату вылета?</p>
+                <span class="message-time">10:02</span>
+              </div>
+            </div>
+            <div class="message-avatar">
+              <img alt="User avatar" class="avatar-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+            </div>
+          </div>
+          <div class="message received">
+            <div class="message-avatar">
+              <img alt="Manager avatar" class="avatar-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD68rH49-goqV96oKeFyH_D09r5-rFo-7BxegBOyNyfhbpJpntjea9oCiKM0rv0Fuo1DzQCLmjBQmLTHJmCYzRmsFpTRCtrploRO9yAxl9-jX5Z-0WRF4VRWODVpuaG-qVcuAj0JAaIbxter1APjlZFJDscqm9UzbEYgH39TsKblgy6RJnQlLqp4qJOe0Jes1QjcyzM8iVcYUdj6ao2GWofubmXPv_s652vuXQQnfuA1o_koD7iM6wRZ2cfjnvvxKwl6tmgENCZkvE"/>
+            </div>
+            <div class="message-content">
+              <div class="message-bubble received">
+                <p class="message-text">Конечно, сейчас проверю информацию. Одну минуту, пожалуйста.</p>
+                <span class="message-time">10:03</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer class="chat-footer">
+          <form class="message-form">
+            <input class="message-input" placeholder="Напишите сообщение..." type="text"/>
+            <button class="send-button" type="submit">
+              <span class="material-symbols-outlined">send</span>
+            </button>
+          </form>
+        </footer>
+      </div>
+    </div>
+  </main>
+  <nav class="mobile-nav">
+    <a class="mobile-nav-link" href="#">
+      <span class="material-symbols-outlined">description</span>
+      <span class="mobile-nav-text">Заказы</span>
+    </a>
+    <a class="mobile-nav-link" href="#">
+      <span class="material-symbols-outlined">favorite</span>
+      <span class="mobile-nav-text">Избранное</span>
+    </a>
+    <a class="mobile-nav-link active" href="/manager/main-menu/manager-support">
+      <span class="material-symbols-outlined">support_agent</span>
+      <span class="mobile-nav-text">Поддержка</span>
+    </a>
+    <a class="mobile-nav-link" href="#">
+      <span class="material-symbols-outlined">person</span>
+      <span class="mobile-nav-text">Кабинет</span>
+    </a>
+  </nav>
+</div>
+<script src="/manager/js/ManagerSupport.js"></script>
+</body>
+</html>

@@ -4,15 +4,12 @@ class BookingController {
   async getUserBookings(req, res) {
     try {
       const userId = req.user?.userId;
-      console.log('Получение бронирований для UserID:', userId);
       if (!userId) {
-        console.log('UserID не определен в getUserBookings');
         return res.status(400).json({
           success: false,
           error: 'UserID не определен'
         });
       }
-      console.log('Выполнение SQL запроса для пользователя:', userId);
       const [bookings] = await pool.execute(
         `
         SELECT 
@@ -23,6 +20,7 @@ class BookingController {
           b.travelers_count,
           b.has_baggage,
           b.baggage_count,
+          b.total_price,  
           t.id as tour_id,
           t.title as tour_title,
           t.description as tour_description,
@@ -39,7 +37,7 @@ class BookingController {
           f.arrival_city,
           f.departure_time,
           f.arrival_time,
-          f.price as flight_price,
+          f.price as flight_price, 
           fi.image_url as flight_image
         FROM bookings b
         LEFT JOIN tours t ON b.tour_id = t.id
@@ -50,7 +48,6 @@ class BookingController {
         `,
         [userId]
       );
-      console.log(`Найдено бронирований: ${bookings.length} шт.`);
       const formattedBookings = await Promise.all(
         bookings.map(async (booking) => {
           const [statusHistory] = await pool.execute(
@@ -78,7 +75,9 @@ class BookingController {
               mainImage: mainImage,
               date: BookingController.formatNormalDate(booking.tour_start_date)+`→\n`+ BookingController.formatNormalDate(booking.tour_end_date),
               status: booking.status,
-              price: BookingController.formatPrice(booking.tour_price),
+              price: BookingController.formatPrice(booking.total_price),
+              originalPrice: BookingController.formatPrice(booking.tour_price),
+              hasDiscount: booking.total_price < booking.tour_price,
               statusUpdatedAt: BookingController.formatNormalDate(statusUpdatedAt),
               details: {
                 country: booking.tour_country,
@@ -103,7 +102,9 @@ class BookingController {
               mainImage: flightImage || '/shared/assets/images/default-flight.jpg',
               date: BookingController.formatFlightDateTime(booking.departure_time),
               status: booking.status,
-              price: BookingController.formatPrice(booking.flight_price),
+              price: BookingController.formatPrice(booking.total_price),
+              originalPrice: BookingController.formatPrice(booking.flight_price),
+              hasDiscount: booking.total_price < booking.flight_price,
               statusUpdatedAt: BookingController.formatNormalDate(statusUpdatedAt),
               details: {
                 airline: booking.airline,
@@ -136,13 +137,12 @@ class BookingController {
               date: BookingController.formatNormalDate(booking.booking_date),
               status: booking.status,
               statusUpdatedAt: BookingController.formatNormalDate(statusUpdatedAt),
-              price: '0',
+              price: BookingController.formatPrice(booking.total_price),
               details: {}
             };
           }
         })
       );
-      console.log('Бронирования успешно обработаны');
       res.json({
         success: true,
         bookings: formattedBookings
@@ -155,6 +155,7 @@ class BookingController {
       });
     }
   }
+
   async getBookingDetails(req, res) {
     try {
       const bookingId = req.params.id;
@@ -193,9 +194,7 @@ class BookingController {
         `,
         [bookingId, userId]
       );
-
       if (bookings.length === 0) {
-        console.log('Бронирование не найдено');
         return res.status(404).json({
           success: false,
           error: 'Бронирование не найдено'
@@ -209,6 +208,7 @@ class BookingController {
         [bookingId]
       );
       const statusUpdatedAt = statusHistory.length > 0 ? statusHistory[0].changed_at : booking.booking_date;
+
       const bookingDetails = {
         id: booking.id,
         bookingDate: BookingController.formatNormalDate(booking.booking_date),
@@ -218,8 +218,22 @@ class BookingController {
         hasBaggage: booking.has_baggage || false,
         baggageCount: booking.baggage_count || 0,
         passengersInfo: `${passengersCount} ${BookingController.getPassengerWord(passengersCount)}`,
-        statusUpdatedAt: BookingController.formatNormalDate(statusUpdatedAt)
+        statusUpdatedAt: BookingController.formatNormalDate(statusUpdatedAt),
+        price: {
+          final: booking.total_price,
+          original: booking.tour_id ? booking.tour_price : booking.flight_price,
+          formattedFinal: BookingController.formatPrice(booking.total_price),
+          formattedOriginal: BookingController.formatPrice(booking.tour_id ? booking.tour_price : booking.flight_price),
+          hasDiscount: booking.total_price < (booking.tour_id ? booking.tour_price : booking.flight_price),
+          discountAmount: booking.total_price < (booking.tour_id ? booking.tour_price : booking.flight_price)
+            ? (booking.tour_id ? booking.tour_price : booking.flight_price) - booking.total_price
+            : 0,
+          discountPercent: booking.total_price < (booking.tour_id ? booking.tour_price : booking.flight_price)
+            ? Math.round((1 - booking.total_price / (booking.tour_id ? booking.tour_price : booking.flight_price)) * 100)
+            : 0
+        }
       };
+
       if (booking.tour_id) {
         const [tourImages] = await pool.execute(
           'SELECT image_url FROM tour_images WHERE tour_id = ? ORDER BY sort_order',
@@ -238,7 +252,9 @@ class BookingController {
           city: booking.tour_city,
           startDate: BookingController.formatNormalDate(booking.tour_start_date),
           endDate: BookingController.formatNormalDate(booking.tour_end_date),
-          price: booking.tour_price,
+          price: booking.total_price,
+          originalPrice: booking.tour_price,
+          hasDiscount: booking.total_price < booking.tour_price,
           images: convertedImages
         };
       } else if (booking.flight_id) {
@@ -260,7 +276,9 @@ class BookingController {
           arrivalTime: BookingController.formatDateTime(booking.flight_arrival_time),
           departureTimeOnly: BookingController.formatTime(booking.flight_departure_time),
           arrivalTimeOnly: BookingController.formatTime(booking.flight_arrival_time),
-          price: booking.flight_price,
+          price: booking.total_price,
+          originalPrice: booking.flight_price,
+          hasDiscount: booking.total_price < booking.flight_price,
           images: convertedImages,
           seatInfo: seatInfo,
           seats: seatInfo,
@@ -268,6 +286,7 @@ class BookingController {
           detailedSeats: BookingController.getDetailedSeatInfo(booking.selected_seats)
         };
       }
+
       const [history] = await pool.execute(
         `
         SELECT status, changed_at 
@@ -281,7 +300,6 @@ class BookingController {
         status: item.status,
         changed_at: BookingController.formatNormalDate(item.changed_at)
       }));
-      console.log('Детали бронирования загружены');
       res.json({
         success: true,
         booking: bookingDetails
@@ -299,9 +317,6 @@ class BookingController {
     try {
       const bookingId = req.params.id;
       const userId = req.user?.userId;
-
-      console.log('Отмена бронирования:', { bookingId, userId });
-
       if (!userId) {
         return res.status(400).json({
           success: false,
@@ -339,7 +354,6 @@ class BookingController {
         'INSERT INTO booking_history (booking_id, status) VALUES (?, "Отменено")',
         [bookingId]
       );
-      console.log('Бронирование успешно отменено');
       res.json({
         success: true,
         message: 'Бронирование успешно отменено'
@@ -352,12 +366,12 @@ class BookingController {
       });
     }
   }
+
   static formatNormalDate(dateString) {
     try {
       if (!dateString) return 'Дата не указана';
       const date = new Date(dateString);
       if (isNaN(date.getTime())) {
-        console.log('Invalid date:', dateString);
         return 'Дата не указана';
       }
       return date.toLocaleDateString('ru-RU', {
@@ -370,12 +384,13 @@ class BookingController {
       return 'Дата не указана';
     }
   }
+
   static formatDateTime(dateTimeString) {
     try {
       if (!dateTimeString) return 'Дата не указана';
       const date = new Date(dateTimeString);
       if (isNaN(date.getTime())) {
-        console.log('Invalid date time:', dateTimeString);
+
         return 'Дата не указана';
       }
       return date.toLocaleString('ru-RU', {
@@ -390,6 +405,7 @@ class BookingController {
       return 'Дата не указана';
     }
   }
+
   static formatTime(dateTimeString) {
     try {
       if (!dateTimeString) return 'Время не указано';
@@ -405,6 +421,7 @@ class BookingController {
       return 'Время не указано';
     }
   }
+
   static formatFlightDateTime(departureTime) {
     try {
       if (!departureTime) return 'Дата не указана';
@@ -413,6 +430,7 @@ class BookingController {
       return 'Дата не указана';
     }
   }
+
   static getPassengerWord(count) {
     if (count % 10 === 1 && count % 100 !== 11) {
       return 'пассажир';
@@ -422,13 +440,9 @@ class BookingController {
       return 'пассажиров';
     }
   }
+
   static formatSeatInfo(selectedSeats, travelersCount) {
     try {
-      console.log('🔍 formatSeatInfo input:', {
-        selectedSeats,
-        travelersCount,
-        type: typeof selectedSeats
-      });
       if (!selectedSeats) {
         return travelersCount > 1 ? `${travelersCount} мест` : 'Место не выбрано';
       }
@@ -460,7 +474,6 @@ class BookingController {
       else if (Array.isArray(selectedSeats)) {
         seats = selectedSeats;
       }
-      console.log('Обработанные места в formatSeatInfo:', seats);
       if (seats && seats.length > 0) {
         if (seats.length === 1) {
           return `Место ${seats[0]}`;
@@ -475,12 +488,9 @@ class BookingController {
       return travelersCount > 1 ? `${travelersCount} мест` : 'Место не выбрано';
     }
   }
+
   static getDetailedSeatInfo(selectedSeats) {
     try {
-      console.log('🔍 getDetailedSeatInfo input:', {
-        selectedSeats,
-        type: typeof selectedSeats
-      });
       if (!selectedSeats) return null;
       let seats = null;
       if (typeof selectedSeats === 'string') {
@@ -510,7 +520,6 @@ class BookingController {
       else if (Array.isArray(selectedSeats)) {
         seats = selectedSeats;
       }
-      console.log('Обработанные места в getDetailedSeatInfo:', seats);
       if (!seats || seats.length === 0) return null;
       return seats.map(seat => {
         const match = seat.match(/(\d+)([A-Z])?/);
@@ -532,6 +541,7 @@ class BookingController {
       return null;
     }
   }
+
   static getFirstSentence(description) {
     if (!description) return 'Описание отсутствует';
     const cleanDescription = description.trim();
@@ -543,6 +553,7 @@ class BookingController {
       ? cleanDescription.substring(0, 100) + '...'
       : cleanDescription;
   }
+
   static formatPrice(price) {
     try {
       if (!price) return '0 €';
@@ -556,6 +567,7 @@ class BookingController {
       return '0 €';
     }
   }
+
   static convertImagePathToUrl(filePath, type) {
     if (!filePath) return null;
     try {
@@ -585,7 +597,7 @@ class BookingController {
 
       return webUrl || (type === 'tours' ? '/images/default-tour.jpg' : '/images/default-flight.jpg');
     } catch (error) {
-      console.error('❌ Ошибка преобразования пути:', error);
+      console.error('Ошибка преобразования пути:', error);
       return type === 'tours' ? '/images/default-tour.jpg' : '/images/default-flight.jpg';
     }
   }

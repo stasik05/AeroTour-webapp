@@ -12,13 +12,10 @@ class DetailsService {
       },
       ...options
     };
-
-    console.log('📡 Отправка запроса:', url);
     const response = await fetch(url, config);
-
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ Ошибка API:', errorText);
+      console.error('Ошибка API:', errorText);
       throw { status: response.status, message: errorText };
     }
 
@@ -41,7 +38,7 @@ class DetailsService {
       const url = `/api/details/flight/${flightId}`;
       return await this.makeAuthorizedRequest(url);
     } catch (error) {
-      console.error('❌ Ошибка при получении деталей рейса:', error);
+      console.error('Ошибка при получении деталей рейса:', error);
       throw error;
     }
   }
@@ -63,7 +60,7 @@ class DetailsService {
 
       return response;
     } catch (error) {
-      console.error('❌ Ошибка при добавлении в избранное:', error);
+      console.error('Ошибка при добавлении в избранное:', error);
       if (error.status === 400 || error.message?.includes('Уже добавлено')) {
         throw { ...error, isAlreadyFavorite: true };
       }
@@ -87,7 +84,7 @@ class DetailsService {
 
       return response;
     } catch (error) {
-      console.error('❌ Ошибка при удалении из избранного:', error);
+      console.error('Ошибка при удалении из избранного:', error);
       throw error;
     }
   }
@@ -96,38 +93,30 @@ class DetailsService {
     try {
       return await this.makeAuthorizedRequest('/api/details/favorites');
     } catch (error) {
-      console.error('❌ Ошибка при получении избранного:', error);
+      console.error('Ошибка при получении избранного:', error);
       throw error;
     }
   }
 
   static async checkIfFavorite(tourId = null, flightId = null) {
     try {
-      console.log('🔍 Проверка избранного для:', { tourId, flightId });
       const favorites = await this.getFavorites();
-      console.log('📋 Все избранные элементы:', favorites);
-
       if (!favorites.success || !favorites.data) {
-        console.log('❌ Не удалось получить избранное');
         return false;
       }
       const isFavorite = favorites.data.some(favorite => {
         if (tourId && favorite.type === 'tour') {
-          console.log(`🔍 Сравниваем tour: ${favorite.id} с ${tourId}`, favorite.id == tourId);
           return favorite.id == tourId;
         }
         if (flightId && favorite.type === 'flight') {
-          console.log(`🔍 Сравниваем flight: ${favorite.id} с ${flightId}`, favorite.id == flightId);
           return favorite.id == flightId;
         }
         return false;
       });
-
-      console.log('✅ Результат проверки избранного:', isFavorite);
       return isFavorite;
 
     } catch (error) {
-      console.error('❌ Ошибка при проверке избранного:', error);
+      console.error('Ошибка при проверке избранного:', error);
       if (error.status === 401 || error.error === 'Токен не найден') {
         return false;
       }
@@ -150,16 +139,7 @@ class DetailsService {
 
       return response;
     } catch (error) {
-      console.error('❌ Ошибка при бронировании:', error);
-      throw error;
-    }
-  }
-
-  static async getBookingHistory() {
-    try {
-      return await this.makeAuthorizedRequest('/api/details/bookings');
-    } catch (error) {
-      console.error('❌ Ошибка при получении истории бронирований:', error);
+      console.error('Ошибка при бронировании:', error);
       throw error;
     }
   }
@@ -176,7 +156,7 @@ class DetailsService {
         body: JSON.stringify(reviewData)
       });
     } catch (error) {
-      console.error('❌ Ошибка при отправке отзыва:', error);
+      console.error('Ошибка при отправке отзыва:', error);
       throw error;
     }
   }

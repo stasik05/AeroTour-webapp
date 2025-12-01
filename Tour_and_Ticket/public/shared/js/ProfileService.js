@@ -15,18 +15,13 @@ export class ProfileService
       ...options
     };
 
-    console.log('📡 Отправка запроса:', url);
-    console.log('🔑 Токен:', token.substring(0, 20) + '...');
-
     const response = await fetch(url, config);
     const result = await response.json();
 
     if (!response.ok) {
-      console.error('❌ Ошибка API:', result);
+      console.error('Ошибка API:', result);
       throw result;
     }
-
-    console.log('✅ Успешный ответ:', result);
     return result;
   }
 
@@ -37,7 +32,6 @@ export class ProfileService
   static async updateProfile(profileData)
   {
     const token = localStorage.getItem('token');
-    console.log('🔑 Токен для PUT:', token ? 'есть' : 'нет');
     return await this.makeAuthorizedRequest('/api/user/profile', {
       method: 'PUT',
       headers: {
@@ -47,7 +41,26 @@ export class ProfileService
       body: JSON.stringify(profileData)
     });
   }
+  static async getPersonalOffers() {
+    try {
+      const response = await fetch('/api/user/profile/offers', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
+      if (!response.ok) {
+        throw new Error('Ошибка загрузки предложений');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching personal offers:', error);
+      throw error;
+    }
+  }
   static async getBookings() {
     return await this.makeAuthorizedRequest('/api/user/bookings');
   }
@@ -65,7 +78,6 @@ export class ProfileService
   static async changePassword(passwordData)
   {
     const token = localStorage.getItem('token');
-    // console.log('🔑 Токен для POST:', token ? 'есть' : 'нет');
     return await this.makeAuthorizedRequest('/api/user/profile/password', {
       method: 'POST',
       headers: {

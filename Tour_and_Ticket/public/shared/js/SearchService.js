@@ -16,19 +16,14 @@ class SearchService
           },
         ...options
       };
-    console.log('📡 Отправка запроса:', url);
-    console.log('🔑 Токен:', token.substring(0, 20) + '...');
     const response = await fetch(url, config);
     const result = await response.json();
 
     if(!response.ok)
     {
-      console.error('❌ Ошибка API:', result);
-      // Добавляем статус ошибки в объект ошибки
+      console.error('Ошибка API:', result);
       throw { ...result, status: response.status };
     }
-
-    console.log('✅ Успешный ответ:', result);
     return result;
   }
 
@@ -47,7 +42,7 @@ class SearchService
     }
     catch(error)
     {
-      console.error('❌ Ошибка при поиске туров:', error);
+      console.error('Ошибка при поиске туров:', error);
       throw error;
     }
   }
@@ -66,7 +61,7 @@ class SearchService
     }
     catch(error)
     {
-      console.error('❌ Ошибка при поиске авиабилетов:', error);
+      console.error('Ошибка при поиске авиабилетов:', error);
       throw error;
     }
   }
@@ -94,9 +89,7 @@ class SearchService
     }
     catch(error)
     {
-      console.error('❌ Ошибка при добавлении в избранное:', error);
-
-      // Проверяем, является ли ошибка "Уже в избранном"
+      console.error('Ошибка при добавлении в избранное:', error);
       if (error.status === 409 || error.isAlreadyFavorite) {
         throw { ...error, isAlreadyFavorite: true };
       }
@@ -113,11 +106,10 @@ class SearchService
     }
     catch(error)
     {
-      console.error('❌ Ошибка при получении избранного:', error);
+      console.error('Ошибка при получении избранного:', error);
       throw error;
     }
   }
-
   static async removeFromFavorites(favoriteId)
   {
     try
@@ -129,7 +121,7 @@ class SearchService
     }
     catch(error)
     {
-      console.error('❌ Ошибка при удалении из избранного:', error);
+      console.error('Ошибка при удалении из избранного:', error);
       throw error;
     }
   }
@@ -143,16 +135,10 @@ class SearchService
         return false;
       });
     } catch (error) {
-      console.error('❌ Ошибка при проверке избранного:', error);
+      console.error('Ошибка при проверке избранного:', error);
       return false;
     }
   }
-
-  static isAuthenticated()
-  {
-    return !!localStorage.getItem("token");
-  }
-
   static logout()
   {
     localStorage.removeItem("token");

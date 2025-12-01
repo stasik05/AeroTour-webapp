@@ -1,6 +1,5 @@
 import {AuthService} from '/shared/js/AuthService.js'
 
-// Добавляем стили для глазка
 const style = document.createElement('style');
 style.textContent = `
     .form-input1.error {
@@ -46,8 +45,8 @@ document.querySelector('.login-form').addEventListener('submit', async(e) =>
   const formData = new FormData(e.target);
   const credentials =
     {
-      email:formData.get('email'),
-      password:formData.get('password')
+      email: formData.get('email'),
+      password: formData.get('password')
     };
   clearErrors();
   try
@@ -58,10 +57,29 @@ document.querySelector('.login-form').addEventListener('submit', async(e) =>
       showMessage('Вход выполнен успешно! Перенаправление...', 'success');
       localStorage.setItem('token', result.token);
       localStorage.setItem('user', JSON.stringify(result.user));
-      setTimeout(()=>
+      setTimeout(() =>
       {
-        window.location.href = '/client/mainClientWindow.html'
-      },100);
+        const userRole = result.user.role ? result.user.role.name : null;
+        if(userRole === 'client')
+        {
+          window.location.href = '/client/dashboard';
+        }
+        else if(userRole === 'manager')
+        {
+          window.location.href = '/manager/main-menu';
+        }
+        else if(userRole === 'admin')
+        {
+          window.location.href = '/admin/main-menu';
+        }
+        else
+        {
+          console.error('Неизвестная роль пользователя:', result.user);
+          showMessage('Роль пользователя не определена', 'error');
+          AuthService.logout();
+        }
+
+      }, 100);
     }
   }
   catch(error)
@@ -93,6 +111,7 @@ function showMessage(text, type)
         `;
   document.querySelector('.login-form').prepend(message);
 }
+
 function handleError(error)
 {
   if (error.errors)
@@ -148,10 +167,10 @@ function createPasswordToggle(inputId)
   });
   container.appendChild(toggle);
 }
+
 document.addEventListener('DOMContentLoaded', function() {
   const passwordInput = document.querySelector('input[name="password"]');
   if (passwordInput) {
-    // Добавляем id если его нет
     if (!passwordInput.id) {
       passwordInput.id = 'login-password';
     }

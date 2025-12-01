@@ -7,7 +7,6 @@ class AuthController
     try
     {
       const{name,lastName,email,password,phone} = req.body;
-      console.log('Регистрация пользователя:',{email,name,lastName});
       if(!name || !lastName||!email||!password)
       {
         return res.status(400).json({

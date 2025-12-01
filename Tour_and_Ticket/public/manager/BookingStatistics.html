@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>AeroTour - Статистика бронирований</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <link rel="stylesheet" href="/shared/css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+      .page-container {
+          max-width: 1400px;
+          margin: 2rem auto;
+          padding: 0 1rem;
+      }
+
+      .stats-header {
+          text-align: center;
+          margin-bottom: 3rem;
+      }
+
+      .section-title {
+          font-family: 'Playfair Display', serif;
+          color: white;
+          font-size: 3rem;
+          margin-bottom: 1rem;
+          background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+      }
+
+      .section-subtitle {
+          color: #cbd5e1;
+          font-size: 1.2rem;
+          max-width: 600px;
+          margin: 0 auto;
+      }
+
+      .filters-section {
+          background: rgba(15, 23, 42, 0.8);
+          backdrop-filter: blur(20px);
+          border-radius: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 2rem;
+          margin-bottom: 2rem;
+      }
+
+      .filters-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 1.5rem;
+      }
+
+      .filter-group {
+          display: flex;
+          flex-direction: column;
+      }
+
+      .filter-label {
+          font-weight: 500;
+          margin-bottom: 0.5rem;
+          color: #f1f5f9;
+          font-size: 0.9rem;
+      }
+
+      .filter-select {
+          padding: 0.75rem 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 0.75rem;
+          background: rgba(30, 41, 59, 0.6);
+          color: white;
+          font-size: 0.9rem;
+          transition: all 0.3s;
+      }
+
+      .filter-select:focus {
+          outline: none;
+          border-color: #f59e0b;
+          box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+      }
+
+      .search-actions {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+          flex-wrap: wrap;
+      }
+
+      .btn {
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 0.75rem;
+          font-size: 0.9rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          text-decoration: none;
+      }
+
+      .btn-primary {
+          background: linear-gradient(135deg, #f59e0b, #d97706);
+          color: white;
+      }
+
+      .btn-secondary {
+          background: rgba(71, 85, 105, 0.8);
+          color: white;
+      }
+
+      .btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      }
+
+      .stats-overview {
+          display: flex;
+          justify-content: center;
+
+          gap: 1.5rem;
+          margin-bottom: 3rem;
+      }
+
+      .stat-card {
+          background: rgba(15, 23, 42, 0.8);
+          backdrop-filter: blur(20px);
+          border-radius: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 2rem;
+          text-align: center;
+          transition: all 0.3s;
+          color: white;
+      }
+
+      .stat-card:hover {
+          transform: translateY(-8px);
+          border-color: #f59e0b;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      }
+
+      .stat-value {
+          font-size: 2.5rem;
+          font-weight: 700;
+          margin-bottom: 0.5rem;
+          background: linear-gradient(135deg, #f59e0b, #eab308);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+      }
+
+      .stat-label {
+          font-size: 1rem;
+          color: #94a3b8;
+          font-weight: 500;
+      }
+
+      .charts-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 2rem;
+          margin-bottom: 2rem;
+      }
+
+      .chart-container {
+          flex: 1 1 400px;
+          min-width: 400px;
+          max-width: calc(50% - 1rem);
+          background: rgba(15, 23, 42, 0.8);
+          backdrop-filter: blur(20px);
+          border-radius: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 1.5rem;
+          transition: all 0.3s;
+          color: white;
+      }
+
+      .chart-container:hover {
+          transform: translateY(-5px);
+          border-color: #f59e0b;
+          box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+      }
+
+      .chart-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 1.5rem;
+          color: white;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-family: 'Playfair Display', serif;
+      }
+
+      .chart-wrapper {
+          position: relative;
+          height: 300px;
+          width: 100%;
+      }
+
+      .export-section {
+          display: flex;
+          justify-content: center;
+          gap: 1rem;
+          margin-top: 3rem;
+          flex-wrap: wrap;
+      }
+
+      .loading {
+          text-align: center;
+          padding: 3rem;
+          color: #94a3b8;
+          background: rgba(15, 23, 42, 0.8);
+          backdrop-filter: blur(20px);
+          border-radius: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .back-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          background: rgba(71, 85, 105, 0.8);
+          color: white;
+          text-decoration: none;
+          border-radius: 0.75rem;
+          margin-bottom: 2rem;
+          transition: all 0.3s;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .back-btn:hover {
+          background: rgba(100, 116, 139, 0.8);
+          transform: translateY(-2px);
+      }
+      @media (max-width: 768px) {
+          .page-container {
+              margin: 1rem auto;
+              padding: 0 0.5rem;
+          }
+
+          .section-title {
+              font-size: 2rem;
+          }
+
+          .filters-grid {
+              grid-template-columns: 1fr;
+          }
+
+          .stats-overview {
+              grid-template-columns: 1fr;
+          }
+
+          .charts-grid {
+              grid-template-columns: 1fr;
+              gap: 1rem;
+          }
+
+          .chart-container {
+              padding: 1rem;
+          }
+
+          .chart-wrapper {
+              height: 250px;
+          }
+
+          .search-actions {
+              justify-content: center;
+          }
+
+          .export-section {
+              flex-direction: column;
+              align-items: center;
+          }
+
+          .btn {
+              width: 100%;
+              justify-content: center;
+          }
+      }
+
+      @media (max-width: 480px) {
+          .charts-grid {
+              grid-template-columns: 1fr;
+          }
+
+          .chart-container {
+              min-width: unset;
+          }
+      }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <svg class="logo-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <h1 class="logo-text">AeroTour</h1>
+        </div>
+        <nav class="navigation">
+          <a class="nav-link" href="/manager/main-menu">
+            <span class="material-symbols-outlined">home</span>
+            <span class="nav-link-text">Главное меню</span>
+          </a>
+          <a class="nav-link" href="/manager/main-menu/manager-support">
+            <span class="material-symbols-outlined">support_agent</span>
+            <span class="nav-link-text">Поддержка</span>
+          </a>
+          <a class="nav-link active" href="/manager/main-menu/bookings/bookings-statistics">
+            <span class="material-symbols-outlined">analytics</span>
+            <span class="nav-link-text">Статистика</span>
+          </a>
+          <a class="nav-link" href="/manager/main-menu/profile">
+            <span class="material-symbols-outlined">person</span>
+            <span class="nav-link-text">Личный кабинет</span>
+          </a>
+        </nav>
+        <div class="user-actions">
+          <button class="notification-button">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <img alt="User avatar" class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx2FfruuFqkbFHkjSw1WMStAbgtZcxFEtDmICVOrhFSPi3FN3qcWivYHYiL1YyvYlYwt1cv-7pzhSDmQWr6HOFL1MJBvH9bTpZNGgGHGzlvZERppRj-kMQ43klZSEJKBclYoOBvMLkMOwpFfc02W_tKNUBEu3rue_s4XEd5He2bBtwCEQc71fnVUpc6t7tpP7h7RKn8Yp7FLlM2O-EY5InUkOYG3wdtcZ5dnB-hXloiu14m53r3zOHkjwDTbH7IDoHoB-eupffUA"/>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="main-content">
+    <div class="background-animation">
+      <div class="background-overlay"></div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+    <div class="content-overlay">
+      <div class="container">
+        <div class="page-container">
+          <a href="/manager/main-menu/bookings" class="back-btn">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Назад в меню
+          </a>
+
+          <div class="stats-header">
+            <h2 class="section-title">Статистика бронирований</h2>
+            <p class="section-subtitle">Аналитика и визуализация данных о бронированиях</p>
+          </div>
+
+          <div class="filters-section">
+            <div class="filters-grid">
+              <div class="filter-group">
+                <label class="filter-label">Год</label>
+                <select id="yearFilter" class="filter-select">
+                  <option value="all">Все годы</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label class="filter-label">Тип бронирования</label>
+                <select id="typeFilter" class="filter-select">
+                  <option value="all">Все типы</option>
+                  <option value="tour">Туры</option>
+                  <option value="flight">Авиабилеты</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label class="filter-label">Статус</label>
+                <select id="statusFilter" class="filter-select">
+                  <option value="all">Все статусы</option>
+                  <option value="Активно">Активно</option>
+                  <option value="Завершено">Завершено</option>
+                  <option value="Отменено">Отменено</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label class="filter-label">Группировка</label>
+                <select id="groupByFilter" class="filter-select">
+                  <option value="month">По месяцам</option>
+                  <option value="quarter">По кварталам</option>
+                  <option value="year">По годам</option>
+                </select>
+              </div>
+            </div>
+            <div class="search-actions">
+              <button class="btn btn-primary" onclick="loadStatistics()">
+                <span class="material-symbols-outlined">query_stats</span>
+                Применить фильтры
+              </button>
+              <button class="btn btn-secondary" onclick="resetFilters()">
+                <span class="material-symbols-outlined">refresh</span>
+                Сбросить
+              </button>
+            </div>
+          </div>
+          <div class="stats-overview" id="statsOverview">
+            <div class="stat-card">
+              <div class="stat-value" id="totalBookings">0</div>
+              <div class="stat-label">Всего бронирований</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="totalRevenue">0 €</div>
+              <div class="stat-label">Общая выручка</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="avgBookingValue">0 €</div>
+              <div class="stat-label">Средний чек</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="completionRate">0%</div>
+              <div class="stat-label">Процент завершения</div>
+            </div>
+          </div>
+          <div class="charts-grid">
+            <div class="chart-container">
+              <div class="chart-title">
+                <span class="material-symbols-outlined">show_chart</span>
+                Бронирования по месяцам
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="bookingsByMonthChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-title">
+                <span class="material-symbols-outlined">pie_chart</span>
+                Распределение по типам
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="bookingsByTypeChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-title">
+                <span class="material-symbols-outlined">trending_up</span>
+                Выручка по месяцам
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="revenueByMonthChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-title">
+                <span class="material-symbols-outlined">public</span>
+                Бронирования по странам
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="bookingsByCountryChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-title">
+                <span class="material-symbols-outlined">donut_large</span>
+                Статусы бронирований
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="bookingsByStatusChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-title">
+                <span class="material-symbols-outlined">location_city</span>
+                Бронирования по городам
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="bookingsByCityChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-title">
+                <span class="material-symbols-outlined">ac_unit</span>
+                Бронирования по сезонам
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="bookingsBySeasonChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-title">
+                <span class="material-symbols-outlined">attach_money</span>
+                Распределение по стоимости
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="bookingsByPriceChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-title">
+                <span class="material-symbols-outlined">groups</span>
+                Количество путешественников
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="bookingsByTravelersChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-title">
+                <span class="material-symbols-outlined">airlines</span>
+                Авиакомпании
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="bookingsByAirlineChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="export-section">
+            <button class="btn btn-primary" onclick="exportData('pdf')">
+              <span class="material-symbols-outlined">picture_as_pdf</span>
+              Экспорт в PDF
+            </button>
+            <button class="btn btn-secondary" onclick="exportData('excel')">
+              <span class="material-symbols-outlined">table_chart</span>
+              Экспорт в Excel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="/manager/js/BookingStatistics.js"></script>
+</body>
+</html>
